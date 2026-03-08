@@ -1,50 +1,98 @@
 {% extends "base.html" %}
 
-{% block title %}Login - SmartATS{% endblock %}
+{% block title %}Login / Register - SmartATS{% endblock %}
 
 {% block content %}
-<div style="min-height: 70vh; display: flex; align-items: center; justify-content: center;">
-    <div class="card" style="max-width: 500px; width: 100%; text-align: center;">
-        <h1 style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--accent);">
-            <i class="fas fa-sign-in-alt"></i> Welcome to SmartATS
-        </h1>
-        <p style="color: var(--text-secondary); margin-bottom: 2.5rem;">
-            Sign in to save your analysis history, track progress, and access premium features
-        </p>
-        
-        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-            <a href="{{ url_for('auth.google_login') }}" class="btn btn-primary" style="justify-content: center; padding: 1rem 2rem; font-size: 1.1rem;">
-                <i class="fab fa-google"></i> Continue with Google
-            </a>
-            
-            <div style="position: relative; margin: 1rem 0;">
-                <hr style="border: none; border-top: 1px solid var(--border);">
-                <span style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--bg-primary); padding: 0 1rem; color: var(--text-secondary); font-size: 0.9rem;">
-                    or
-                </span>
+<div class="auth-shell page-shell">
+    <section class="auth-frame">
+        <aside class="auth-brand section-card">
+            <p class="auth-kicker">Welcome to SmartATS</p>
+            <h1 class="hero-title hero-title-auth">Secure Login and Fast Registration</h1>
+            <p class="hero-copy">Sign in with your existing account, create a new profile, or continue with Google in one place.</p>
+            <div class="auth-benefits">
+                <p><i class="fas fa-check-circle"></i> Save resume analysis history</p>
+                <p><i class="fas fa-check-circle"></i> Track interview progress over time</p>
+                <p><i class="fas fa-check-circle"></i> Download professional ATS reports</p>
             </div>
-            
-            <a href="{{ url_for('core.home') }}" class="btn btn-secondary" style="justify-content: center; padding: 1rem 2rem;">
-                <i class="fas fa-user-secret"></i> Continue as Guest
-            </a>
-        </div>
-        
-        <div style="margin-top: 2.5rem; padding: 1.5rem; background: var(--bg-secondary); border-radius: 12px; text-align: left;">
-            <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">
-                <i class="fas fa-info-circle"></i> Why Sign In?
-            </h3>
-            <ul style="color: var(--text-secondary); font-size: 0.95rem; padding-left: 1.5rem; margin: 0;">
-                <li style="margin-bottom: 0.5rem;">📊 Save and track all your resume analyses</li>
-                <li style="margin-bottom: 0.5rem;">🎤 Access your interview history</li>
-                <li style="margin-bottom: 0.5rem;">📈 Monitor your progress over time</li>
-                <li style="margin-bottom: 0.5rem;">💾 Download past reports anytime</li>
-                <li>🚀 Get personalized recommendations</li>
-            </ul>
-        </div>
-        
-        <p style="margin-top: 2rem; color: var(--text-secondary); font-size: 0.9rem;">
-            <strong>Guest Mode:</strong> Use the app without signing in, but history won't be saved
-        </p>
-    </div>
+        </aside>
+
+        <section class="section-card auth-main">
+            <div class="action-row action-row-center auth-toggle-row">
+                <button id="showLogin" type="button" class="btn btn-primary" aria-pressed="true">Login</button>
+                <button id="showRegister" type="button" class="btn btn-secondary" aria-pressed="false">New Registration</button>
+            </div>
+
+            <div class="auth-grid" id="authGrid">
+                <div id="loginPanel" class="section-card auth-panel">
+                    <h3 class="section-title">Login</h3>
+                    <form method="POST" action="{{ url_for('auth.login_password') }}" class="form-grid">
+                        <label class="form-label">Email</label>
+                        <input name="email" type="email" required placeholder="you@example.com">
+                        <label class="form-label">Password</label>
+                        <input name="password" type="password" required placeholder="Enter password">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" name="remember"> Remember me
+                        </label>
+                        <button type="submit" class="btn btn-primary">Login</button>
+                    </form>
+                </div>
+
+                <div id="registerPanel" class="section-card auth-panel" hidden>
+                    <h3 class="section-title">Create Account</h3>
+                    <form method="POST" action="{{ url_for('auth.register') }}" class="form-grid">
+                        <label class="form-label">Full Name</label>
+                        <input name="name" type="text" required placeholder="Your full name">
+                        <label class="form-label">Email</label>
+                        <input name="email" type="email" required placeholder="you@example.com">
+                        <label class="form-label">Password</label>
+                        <input name="password" type="password" required minlength="8" placeholder="At least 8 characters">
+                        <label class="form-label">Confirm Password</label>
+                        <input name="confirm_password" type="password" required minlength="8" placeholder="Re-enter password">
+                        <button type="submit" class="btn btn-primary">Create Account</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="auth-divider">
+                <hr>
+                <span>or</span>
+            </div>
+
+            <div class="action-row action-row-center">
+                <a href="{{ url_for('auth.google_login') }}" class="btn btn-secondary"><i class="fab fa-google"></i> Continue with Google</a>
+                <a href="{{ url_for('core.home') }}" class="btn btn-secondary"><i class="fas fa-user-secret"></i> Continue as Guest</a>
+            </div>
+        </section>
+    </section>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const loginBtn = document.getElementById('showLogin');
+    const registerBtn = document.getElementById('showRegister');
+    const loginPanel = document.getElementById('loginPanel');
+    const registerPanel = document.getElementById('registerPanel');
+
+    function showLogin() {
+        loginPanel.hidden = false;
+        registerPanel.hidden = true;
+        loginBtn.className = 'btn btn-primary';
+        registerBtn.className = 'btn btn-secondary';
+        loginBtn.setAttribute('aria-pressed', 'true');
+        registerBtn.setAttribute('aria-pressed', 'false');
+    }
+
+    function showRegister() {
+        loginPanel.hidden = true;
+        registerPanel.hidden = false;
+        loginBtn.className = 'btn btn-secondary';
+        registerBtn.className = 'btn btn-primary';
+        loginBtn.setAttribute('aria-pressed', 'false');
+        registerBtn.setAttribute('aria-pressed', 'true');
+    }
+
+    loginBtn.addEventListener('click', showLogin);
+    registerBtn.addEventListener('click', showRegister);
+});
+</script>
 {% endblock %}

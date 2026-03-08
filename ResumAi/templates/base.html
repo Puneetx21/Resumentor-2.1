@@ -1,37 +1,41 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="blue">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}SmartATS{% endblock %}</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
 
 </head>
 <body>
     <nav class="navbar">
         <div class="nav-container">
             <div class="logo">SmartATS</div>
-            <ul class="nav-links">
-                <li><a href="{{ url_for('core.home') }}">Home</a></li>
-                <li><a href="{{ url_for('resume.analyzer') }}">Resume Analyzer</a></li>
-                <li><a href="{{ url_for('interview.interview') }}">Mock Interview</a></li>
+            <button class="nav-menu-toggle" id="navMenuToggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="{{ url_for('core.home') }}" class="{{ 'nav-active' if request.endpoint == 'core.home' }}">Home</a></li>
+                <li><a href="{{ url_for('resume.analyzer') }}" class="{{ 'nav-active' if request.endpoint in ('resume.analyzer', 'resume.report', 'resume.download_report') }}">Resume Analyzer</a></li>
+                <li><a href="{{ url_for('interview.interview') }}" class="{{ 'nav-active' if request.endpoint in ('interview.interview', 'interview.view_interview_report', 'interview.download_interview_history') }}">Mock Interview</a></li>
                 {% if current_user.is_authenticated %}
-                    <li><a href="{{ url_for('dashboard.dashboard') }}">Dashboard</a></li>
-                    <li><a href="{{ url_for('dashboard.profile') }}">
+                    <li><a href="{{ url_for('dashboard.dashboard') }}" class="{{ 'nav-active' if request.endpoint in ('dashboard.dashboard', 'dashboard.history', 'dashboard.view_resume_report', 'dashboard.download_resume_history') }}">Dashboard</a></li>
+                    <li><a href="{{ url_for('dashboard.profile') }}" class="{{ 'nav-active' if request.endpoint == 'dashboard.profile' }}">
                         <i class="fas fa-user-circle"></i> {{ current_user.name.split()[0] if current_user.name else 'User' }}
                     </a></li>
-                    <li><a href="{{ url_for('auth.logout') }}" style="color: #ef4444;">
+                    <li><a href="{{ url_for('auth.logout') }}" class="nav-link-danger">
                         <i class="fas fa-sign-out-alt"></i> Logout
                     </a></li>
                 {% else %}
-                    <li><a href="{{ url_for('auth.login') }}" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; padding: 0.5rem 1rem; border-radius: 8px;">
+                    <li><a href="{{ url_for('auth.login') }}" class="nav-link-cta {{ 'nav-active' if request.endpoint in ('auth.login', 'auth.register') }}">
                         <i class="fas fa-sign-in-alt"></i> Login
                     </a></li>
                 {% endif %}
             </ul>
-            <button class="theme-toggle" id="themeToggle" title="Toggle theme">
-                <i class="fas fa-sun" id="themeIcon"></i>
+            <button class="theme-toggle" id="themeToggle" title="Toggle blue/pink theme">
+                <i class="fas fa-droplet" id="themeIcon"></i>
             </button>
         </div>
     </nav>

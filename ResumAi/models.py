@@ -2,6 +2,7 @@ from ResumAi.extensions import db
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, LoginManager
+import uuid
 # from ResumAi import db, login_manager  # Import login_manager
 
 class User(UserMixin,db.Model):
@@ -9,12 +10,26 @@ class User(UserMixin,db.Model):
     google_id = db.Column(db.String(255), unique=True, nullable=False)
     email = db.Column(db.String(255), unique=True, nullable=False)
     name = db.Column(db.String(255), nullable=False)
+    password_hash = db.Column(db.String(255), nullable=True)
     role = db.Column(db.String(100))  # 'candidate', 'recruiter'
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Relationships
     resumes = db.relationship('Resume', backref='user', lazy=True)
     interviews = db.relationship('InterviewSession', backref='user', lazy=True)
+
+    @staticmethod
+    def build_local_google_id():
+        # Keep google_id non-null for compatibility with existing schema.
+        return f"local_{uuid.uuid4().hex}"
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        if not self.password_hash:
+            return False
+        return check_password_hash(self.password_hash, password)
 
 
 class Resume(db.Model):

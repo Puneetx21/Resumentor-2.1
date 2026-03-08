@@ -3,158 +3,102 @@
 {% block title %}History - SmartATS{% endblock %}
 
 {% block content %}
-<div class="container">
-    <!-- Header -->
-    <div style="margin-bottom: 2rem;">
-        <a href="{{ url_for('dashboard.dashboard') }}" style="color: var(--text-secondary); text-decoration: none; display: inline-block; margin-bottom: 1rem;">
-            <i class="fas fa-arrow-left"></i> Back to Dashboard
-        </a>
-        <h1 style="font-size: 2.5rem;">
-            <i class="fas fa-history"></i> Activity History
-        </h1>
-        <p style="color: var(--text-secondary);">View and download your past analyses and interviews</p>
-    </div>
-
-    <!-- Resume Analyses -->
-    {% if resumes %}
-    <div class="card" style="margin-bottom: 2rem;">
-        <h2 style="margin-bottom: 1.5rem;">
-            <i class="fas fa-file-pdf"></i> Resume Analyses History
-            <span style="font-size: 1rem; color: var(--text-secondary); font-weight: normal;">({{ resumes|length }} total)</span>
-        </h2>
-        
-        <div style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse;">
-                <thead>
-                    <tr style="background: var(--bg-secondary); border-bottom: 2px solid var(--border);">
-                        <th style="padding: 1rem; text-align: left;">Filename</th>
-                        <th style="padding: 1rem; text-align: left;">Role</th>
-                        <th style="padding: 1rem; text-align: center;">ATS Score</th>
-                        <th style="padding: 1rem; text-align: left;">Date</th>
-                        <th style="padding: 1rem; text-align: center;">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for resume in resumes %}
-                    <tr style="border-bottom: 1px solid var(--border);">
-                        <td style="padding: 1rem;">
-                            <i class="fas fa-file-pdf" style="color: #ef4444; margin-right: 0.5rem;"></i>
-                            <strong>{{ resume.filename }}</strong>
-                        </td>
-                        <td style="padding: 1rem;">{{ resume.role }}</td>
-                        <td style="padding: 1rem; text-align: center;">
-                            <span style="font-size: 1.3rem; font-weight: bold; 
-                                        color: {% if resume.score >= 80 %}#10b981{% elif resume.score >= 65 %}#f59e0b{% else %}#ef4444{% endif %};">
-                                {{ resume.score }}%
-                            </span>
-                        </td>
-                        <td style="padding: 1rem; color: var(--text-secondary);">{{ resume.date }}</td>
-                        <td style="padding: 1rem;">
-                            <div style="display: flex; gap: 0.5rem; justify-content: center;">
-                                <a href="{{ url_for('dashboard.view_resume_report', resume_id=resume.id) }}" 
-                                   class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
-                                    <i class="fas fa-eye"></i> View
-                                </a>
-                                <a href="{{ url_for('dashboard.download_resume_history', resume_id=resume.id) }}" 
-                                   class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
-                                    <i class="fas fa-download"></i> Download
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+<div class="page-shell">
+    <section class="hero-panel account-hero">
+        <div class="page-header">
+            <div>
+                <a href="{{ url_for('dashboard.dashboard') }}" class="page-subtitle link-muted"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+                <p class="account-kicker">Activity Log</p>
+                <h1 class="page-title page-title-tight"><i class="fas fa-clock-rotate-left"></i> Activity History</h1>
+                <p class="page-subtitle">Review and download your previous reports.</p>
+            </div>
         </div>
-    </div>
-    {% else %}
-    <div class="card" style="text-align: center; padding: 3rem; margin-bottom: 2rem;">
-        <i class="fas fa-file-pdf" style="font-size: 3rem; color: var(--text-secondary); margin-bottom: 1rem;"></i>
-        <h3>No Resume Analyses Yet</h3>
-        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
-            Start by analyzing your resume for ATS optimization
-        </p>
-        <a href="{{ url_for('resume.analyzer') }}" class="btn btn-primary">
-            <i class="fas fa-upload"></i> Analyze Resume
-        </a>
-    </div>
-    {% endif %}
+    </section>
 
-    <!-- Mock Interviews -->
-    {% if interviews %}
-    <div class="card">
-        <h2 style="margin-bottom: 1.5rem;">
-            <i class="fas fa-video"></i> Mock Interview History
-            <span style="font-size: 1rem; color: var(--text-secondary); font-weight: normal;">({{ interviews|length }} total)</span>
-        </h2>
-        
-        <div style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse;">
-                <thead>
-                    <tr style="background: var(--bg-secondary); border-bottom: 2px solid var(--border);">
-                        <th style="padding: 1rem; text-align: left;">Role</th>
-                        <th style="padding: 1rem; text-align: center;">Status</th>
-                        <th style="padding: 1rem; text-align: center;">Score</th>
-                        <th style="padding: 1rem; text-align: left;">Date</th>
-                        <th style="padding: 1rem; text-align: center;">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for interview in interviews %}
-                    <tr style="border-bottom: 1px solid var(--border);">
-                        <td style="padding: 1rem;">
-                            <i class="fas fa-microphone" style="color: #8b5cf6; margin-right: 0.5rem;"></i>
-                            <strong>{{ interview.role }}</strong>
-                        </td>
-                        <td style="padding: 1rem; text-align: center;">
-                            <span style="padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600;
-                                        background: {% if interview.status == 'completed' %}#dcfce7; color: #166534{% else %}#fef3c7; color: #92400e{% endif %};">
-                                {{ interview.status|capitalize }}
-                            </span>
-                        </td>
-                        <td style="padding: 1rem; text-align: center;">
-                            {% if interview.score > 0 %}
-                            <span style="font-size: 1.3rem; font-weight: bold; color: #8b5cf6;">
-                                {{ interview.score }}%
-                            </span>
-                            {% else %}
-                            <span style="color: var(--text-secondary);">-</span>
-                            {% endif %}
-                        </td>
-                        <td style="padding: 1rem; color: var(--text-secondary);">{{ interview.date }}</td>
-                        <td style="padding: 1rem; text-align: center;">
-                            {% if interview.status == 'completed' %}
-                            <div style="display: flex; gap: 0.5rem; justify-content: center;">
-                                <a href="{{ url_for('interview.view_interview_report', session_id=interview.id) }}"
-                                   class="btn btn-secondary" style="padding: 0.45rem 0.75rem; font-size: 0.8rem;">
-                                    <i class="fas fa-chart-line"></i> View
-                                </a>
-                                <a href="{{ url_for('interview.download_interview_history', session_id=interview.id) }}"
-                                   class="btn btn-secondary" style="padding: 0.45rem 0.75rem; font-size: 0.8rem;">
-                                    <i class="fas fa-download"></i> Download
-                                </a>
-                            </div>
-                            {% else %}
-                            <span style="color: var(--text-secondary);">-</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    <section class="section-card">
+        <div class="section-head">
+            <h2 class="section-title"><i class="fas fa-file-pdf"></i> Resume Analyses</h2>
+            <span class="page-subtitle">{{ resumes|length }} records</span>
         </div>
-    </div>
-    {% else %}
-    <div class="card" style="text-align: center; padding: 3rem;">
-        <i class="fas fa-microphone" style="font-size: 3rem; color: var(--text-secondary); margin-bottom: 1rem;"></i>
-        <h3>No Mock Interviews Yet</h3>
-        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
-            Practice with AI-powered mock interviews
-        </p>
-        <a href="{{ url_for('interview.interview') }}" class="btn btn-primary">
-            <i class="fas fa-video"></i> Start Interview
-        </a>
-    </div>
-    {% endif %}
+
+        {% if resumes %}
+        <table class="stagger-rows">
+            <thead>
+                <tr>
+                    <th>Filename</th><th>Role</th><th>ATS Score</th><th>Date</th><th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for resume in resumes %}
+                <tr>
+                    <td>{{ resume.filename }}</td>
+                    <td>{{ resume.role }}</td>
+                    <td><strong>{{ resume.score }}%</strong></td>
+                    <td>{{ resume.date }}</td>
+                    <td>
+                        <div class="action-row table-actions">
+                            <a href="{{ url_for('dashboard.view_resume_report', resume_id=resume.id) }}" class="btn btn-secondary">View</a>
+                            <a href="{{ url_for('dashboard.download_resume_history', resume_id=resume.id) }}" class="btn btn-secondary">Download</a>
+                            <form method="POST" action="{{ url_for('dashboard.delete_resume', resume_id=resume.id) }}" onsubmit="return confirm('Delete this resume analysis permanently?')" style="display:inline">
+                                <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Delete</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">No resume analyses yet.</div>
+        {% endif %}
+    </section>
+
+    <section class="section-card">
+        <div class="section-head">
+            <h2 class="section-title"><i class="fas fa-video"></i> Mock Interviews</h2>
+            <span class="page-subtitle">{{ interviews|length }} records</span>
+        </div>
+
+        {% if interviews %}
+        <table class="stagger-rows">
+            <thead>
+                <tr>
+                    <th>Role</th><th>Status</th><th>Score</th><th>Date</th><th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for interview in interviews %}
+                <tr>
+                    <td>{{ interview.role }}</td>
+                    <td>
+                        {% if interview.status == 'completed' %}
+                        <span class="tag tag-ok">Completed</span>
+                        {% else %}
+                        <span class="tag tag-warn">{{ interview.status|capitalize }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ interview.score if interview.score > 0 else '-' }}</td>
+                    <td>{{ interview.date }}</td>
+                    <td>
+                        {% if interview.status == 'completed' %}
+                        <div class="action-row table-actions">
+                            <a href="{{ url_for('interview.view_interview_report', session_id=interview.id) }}" class="btn btn-secondary">View</a>
+                            <a href="{{ url_for('interview.download_interview_history', session_id=interview.id) }}" class="btn btn-secondary">Download</a>
+                            <form method="POST" action="{{ url_for('dashboard.delete_interview', session_id=interview.id) }}" onsubmit="return confirm('Delete this interview session permanently?')" style="display:inline">
+                                <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Delete</button>
+                            </form>
+                        </div>
+                        {% else %}
+                        <span class="page-subtitle">-</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">No interviews completed yet.</div>
+        {% endif %}
+    </section>
 </div>
 {% endblock %}

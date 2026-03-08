@@ -148,6 +148,47 @@ def view_resume_report(resume_id):
     return render_template('resume_report.html', analysis=analysis)
 
 
+@dashboard_bp.route('/history/resume/<int:resume_id>/delete', methods=['POST'])
+@login_required
+def delete_resume(resume_id):
+    resume = Resume.query.filter_by(id=resume_id, user_id=current_user.id).first()
+    if not resume:
+        flash('Resume analysis not found', 'error')
+        return redirect(request.referrer or url_for('dashboard.history'))
+
+    # Delete uploaded file from disk
+    if resume.file_path and os.path.isfile(resume.file_path):
+        os.remove(resume.file_path)
+
+    # Delete related interview rounds linked to this resume
+    from ..models import InterviewRound
+    InterviewRound.query.filter_by(resume_id=resume.id).delete()
+
+    db.session.delete(resume)
+    db.session.commit()
+    flash('Resume analysis deleted successfully', 'success')
+    return redirect(request.referrer or url_for('dashboard.history'))
+
+
+@dashboard_bp.route('/history/interview/<int:session_id>/delete', methods=['POST'])
+@login_required
+def delete_interview(session_id):
+    interview = InterviewSession.query.filter_by(id=session_id, user_id=current_user.id).first()
+    if not interview:
+        flash('Interview session not found', 'error')
+        return redirect(request.referrer or url_for('dashboard.history'))
+
+    # Delete related interview rounds
+    from ..models import InterviewRound
+    InterviewRound.query.filter_by(session_id=interview.id).delete()
+
+    # InterviewResponses cascade via relationship
+    db.session.delete(interview)
+    db.session.commit()
+    flash('Interview session deleted successfully', 'success')
+    return redirect(request.referrer or url_for('dashboard.history'))
+
+
 @dashboard_bp.route('/history/resume/<int:resume_id>/download')
 @login_required
 def download_resume_history(resume_id):

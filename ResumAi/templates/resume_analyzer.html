@@ -17,10 +17,10 @@
     </div>
 
     {% if not current_user.is_authenticated %}
-    <div style="background: linear-gradient(135deg, #fef3c7, #fde68a); padding: 1rem 2rem; border-radius: 12px; margin-bottom: 2rem; border-left: 4px solid #f59e0b; text-align: center;">
-        <p style="margin: 0; color: #92400e; font-size: 1.05rem;">
-            <i class="fas fa-info-circle"></i> <strong>Guest Mode:</strong> Your analysis won't be saved. 
-            <a href="{{ url_for('auth.login') }}" style="color: #d97706; text-decoration: underline; font-weight: 600;">Sign in</a> to save your history!
+    <div class="guest-alert">
+        <p class="guest-alert-text">
+            <i class="fas fa-info-circle"></i> <strong>Guest Mode:</strong> Your analysis won't be saved.
+            <a href="{{ url_for('auth.login') }}" class="guest-alert-link">Sign in</a> to save your history!
         </p>
     </div>
     {% endif %}
@@ -58,14 +58,14 @@
                 <option value="cybersecurity-engineer">Cybersecurity Engineer</option>
             </select>
 
-            <label class="field-label" for="fileInput" style="margin-top: 2rem;">
+            <label class="field-label field-label-upload" for="fileInput">
                 <i class="fas fa-upload"></i> Upload Your Resume (PDF)
             </label>
             <div id="dropZone" class="drop-zone" tabindex="0" role="button" aria-label="Resume upload drop zone">
                 <i class="fas fa-file-pdf"></i>
                 <p>Drag and drop your PDF here or click to select</p>
                 <p class="small">Maximum 10MB | PDF only</p>
-                <input type="file" id="fileInput" name="file" accept=".pdf" style="display: none;" required>
+                <input type="file" id="fileInput" name="file" accept=".pdf" class="file-input-hidden" required>
             </div>
             <div id="selectedFile" class="selected-file" aria-live="polite"></div>
 
@@ -110,7 +110,7 @@
     </div>
 
     <div class="how-card">
-        <h2 class="section-title" style="margin-top: 0;"><i class="fas fa-list-ol"></i> How It Works</h2>
+        <h2 class="section-title how-title"><i class="fas fa-list-ol"></i> How It Works</h2>
         <div class="step-row">
             <div class="step-dot">1</div>
             <div>

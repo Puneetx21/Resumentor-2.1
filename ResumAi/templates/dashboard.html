@@ -3,166 +3,127 @@
 {% block title %}Dashboard - SmartATS{% endblock %}
 
 {% block content %}
-<div class="container">
-    <!-- Header -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
-        <div>
-            <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">
-                <i class="fas fa-tachometer-alt"></i> Dashboard
-            </h1>
-            <p style="color: var(--text-secondary); margin: 0;">Welcome back, <strong>{{ user.name }}</strong>!</p>
+<div class="page-shell">
+    <section class="hero-panel account-hero">
+        <div class="page-header">
+            <div>
+                <p class="account-kicker">Account Workspace</p>
+                <h1 class="page-title"><i class="fas fa-gauge-high"></i> Dashboard</h1>
+                <p class="page-subtitle">Welcome back {{ user.name }}. Monitor your performance and jump into action.</p>
+            </div>
+            <div class="action-row account-actions">
+                <a href="{{ url_for('dashboard.profile') }}" class="btn btn-secondary"><i class="fas fa-user"></i> Profile</a>
+                <a href="{{ url_for('dashboard.history') }}" class="btn btn-secondary"><i class="fas fa-clock-rotate-left"></i> History</a>
+            </div>
         </div>
-        <div style="display: flex; gap: 1rem;">
-            <a href="{{ url_for('dashboard.profile') }}" class="btn btn-secondary">
-                <i class="fas fa-user"></i> Profile
-            </a>
-            <a href="{{ url_for('dashboard.history') }}" class="btn btn-secondary">
-                <i class="fas fa-history"></i> History
-            </a>
-        </div>
-    </div>
+    </section>
 
-    <!-- Quick Stats -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
-        <div class="card" style="text-align: center; padding: 1.5rem;">
-            <div style="font-size: 2.5rem; color: #3b82f6; margin-bottom: 0.5rem;">{{ user.total_analyses }}</div>
-            <h3 style="font-size: 1rem; color: var(--text-secondary); font-weight: 600;">Total Analyses</h3>
-        </div>
-        <div class="card" style="text-align: center; padding: 1.5rem;">
-            <div style="font-size: 2.5rem; color: #8b5cf6; margin-bottom: 0.5rem;">{{ user.total_interviews }}</div>
-            <h3 style="font-size: 1rem; color: var(--text-secondary); font-weight: 600;">Mock Interviews</h3>
-        </div>
-        <div class="card" style="text-align: center; padding: 1.5rem;">
-            <div style="font-size: 2.5rem; color: #10b981; margin-bottom: 0.5rem;">{{ user.avg_ats_score }}%</div>
-            <h3 style="font-size: 1rem; color: var(--text-secondary); font-weight: 600;">Avg ATS Score</h3>
-        </div>
-        <div class="card" style="text-align: center; padding: 1.5rem;">
-            <div style="font-size: 2.5rem; color: #f59e0b; margin-bottom: 0.5rem;">{{ user.recent_resumes + user.recent_interviews }}</div>
-            <h3 style="font-size: 1rem; color: var(--text-secondary); font-weight: 600;">This Week</h3>
-        </div>
-    </div>
+    <section class="kpi-grid stagger-cards">
+        <article class="kpi-card"><div class="kpi-value">{{ user.total_analyses }}</div><div class="kpi-label">Total Resume Analyses</div></article>
+        <article class="kpi-card"><div class="kpi-value">{{ user.total_interviews }}</div><div class="kpi-label">Mock Interviews</div></article>
+        <article class="kpi-card"><div class="kpi-value">{{ user.avg_ats_score }}%</div><div class="kpi-label">Average ATS Score</div></article>
+        <article class="kpi-card"><div class="kpi-value">{{ user.recent_resumes + user.recent_interviews }}</div><div class="kpi-label">Activities This Week</div></article>
+    </section>
 
-    <!-- Quick Actions -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 2.5rem;">
-        <div class="card" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white;">
-            <h3 style="color: white; margin-bottom: 1rem;"><i class="fas fa-file-alt"></i> Analyze Resume</h3>
-            <p style="margin-bottom: 1.5rem; opacity: 0.9;">Upload and analyze your resume for ATS optimization</p>
-            <a href="{{ url_for('resume.analyzer') }}" class="btn" style="background: white; color: #3b82f6;">
-                <i class="fas fa-upload"></i> Start Analysis
-            </a>
-        </div>
-        <div class="card" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white;">
-            <h3 style="color: white; margin-bottom: 1rem;"><i class="fas fa-microphone"></i> Mock Interview</h3>
-            <p style="margin-bottom: 1.5rem; opacity: 0.9;">Practice interviews with AI-powered feedback</p>
-            <a href="{{ url_for('interview.interview') }}" class="btn" style="background: white; color: #8b5cf6;">
-                <i class="fas fa-video"></i> Start Interview
-            </a>
-        </div>
-    </div>
+    <section class="kpi-grid stagger-cards">
+        <article class="section-card">
+            <h3 class="section-title"><i class="fas fa-file-arrow-up"></i> Resume Analyzer</h3>
+            <p class="page-subtitle">Analyze your resume for role-fit, missing keywords, and ATS risk areas.</p>
+            <div class="action-row action-row-mt account-actions"><a href="{{ url_for('resume.analyzer') }}" class="btn btn-primary">Start Analysis</a></div>
+        </article>
+        <article class="section-card">
+            <h3 class="section-title"><i class="fas fa-microphone-lines"></i> Mock Interview</h3>
+            <p class="page-subtitle">Practice real interview rounds with scoring and coaching feedback.</p>
+            <div class="action-row action-row-mt account-actions"><a href="{{ url_for('interview.interview') }}" class="btn btn-primary">Start Interview</a></div>
+        </article>
+    </section>
 
-    <!-- Recent Activity -->
     {% if resumes or interviews %}
-    <div class="card">
-        <h2 style="margin-bottom: 1.5rem;"><i class="fas fa-clock"></i> Recent Activity</h2>
-        
+    <section class="section-card">
+        <div class="section-head">
+            <h2 class="section-title"><i class="fas fa-wave-square"></i> Recent Activity</h2>
+            <a href="{{ url_for('dashboard.history') }}" class="btn btn-secondary">View All</a>
+        </div>
+
         {% if resumes %}
-        <div style="margin-bottom: 2rem;">
-            <h3 style="font-size: 1.2rem; margin-bottom: 1rem; color: var(--text-secondary);">
-                <i class="fas fa-file-pdf"></i> Latest Resume Analyses
-            </h3>
-            <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <h3 class="section-title section-title-resume"><i class="fas fa-file-pdf"></i> Resume Analyses</h3>
+        <table class="stagger-rows">
+            <thead>
+                <tr>
+                    <th>File</th><th>Role</th><th>Score</th><th>Date</th><th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
                 {% for resume in resumes %}
-                <div style="padding: 1rem; border: 1px solid var(--border); border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-                    <div style="flex: 1; min-width: 200px;">
-                        <strong style="color: var(--text-primary);">{{ resume.filename }}</strong>
-                        <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.25rem;">
-                            {{ resume.role_target }} • {{ resume.created_at.strftime('%b %d, %Y') }}
+                <tr>
+                    <td>{{ resume.filename }}</td>
+                    <td>{{ resume.role_target }}</td>
+                    <td><strong>{{ resume.ats_score }}%</strong></td>
+                    <td>{{ resume.created_at.strftime('%b %d, %Y') }}</td>
+                    <td>
+                        <div class="action-row table-actions">
+                            <a href="{{ url_for('dashboard.view_resume_report', resume_id=resume.id) }}" class="btn btn-secondary">View</a>
+                            <a href="{{ url_for('dashboard.download_resume_history', resume_id=resume.id) }}" class="btn btn-secondary">Download</a>
+                            <form method="POST" action="{{ url_for('dashboard.delete_resume', resume_id=resume.id) }}" onsubmit="return confirm('Delete this resume analysis permanently?')" style="display:inline">
+                                <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Delete</button>
+                            </form>
                         </div>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <div style="text-align: right; margin-right: 1rem;">
-                            <div style="font-size: 1.5rem; font-weight: bold; 
-                                        color: {% if resume.ats_score >= 80 %}#10b981{% elif resume.ats_score >= 65 %}#f59e0b{% else %}#ef4444{% endif %};">
-                                {{ resume.ats_score }}%
-                            </div>
-                            <div style="font-size: 0.85rem; color: var(--text-secondary);">ATS Score</div>
-                        </div>
-                        <div style="display: flex; gap: 0.5rem;">
-                            <a href="{{ url_for('dashboard.view_resume_report', resume_id=resume.id) }}" class="btn btn-secondary" style="font-size: 0.8rem; padding: 0.5rem 1rem;">
-                                <i class="fas fa-eye"></i> View
-                            </a>
-                            <a href="{{ url_for('dashboard.download_resume_history', resume_id=resume.id) }}" class="btn btn-secondary" style="font-size: 0.8rem; padding: 0.5rem 1rem;">
-                                <i class="fas fa-download"></i> Download
-                            </a>
-                        </div>
-                    </div>
-                </div>
+                    </td>
+                </tr>
                 {% endfor %}
-            </div>
-        </div>
+            </tbody>
+        </table>
         {% endif %}
-        
+
         {% if interviews %}
-        <div>
-            <h3 style="font-size: 1.2rem; margin-bottom: 1rem; color: var(--text-secondary);">
-                <i class="fas fa-video"></i> Latest Mock Interviews
-            </h3>
-            <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <h3 class="section-title section-title-interview"><i class="fas fa-video"></i> Mock Interviews</h3>
+        <table class="stagger-rows">
+            <thead>
+                <tr>
+                    <th>Role</th><th>Status</th><th>Score</th><th>Date</th><th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
                 {% for interview in interviews %}
-                <div style="padding: 1rem; border: 1px solid var(--border); border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-                    <div style="flex: 1; min-width: 200px;">
-                        <strong style="color: var(--text-primary);">{{ interview.role }}</strong>
-                        <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.25rem;">
-                            {{ interview.created_at.strftime('%b %d, %Y') }} • 
-                            <span style="text-transform: capitalize;">{{ interview.status }}</span>
-                        </div>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        {% if interview.overall_score > 0 %}
-                        <div style="text-align: right; margin-right: 1rem;">
-                            <div style="font-size: 1.5rem; font-weight: bold; color: #8b5cf6;">
-                                {{ interview.overall_score }}%
-                            </div>
-                            <div style="font-size: 0.85rem; color: var(--text-secondary);">Score</div>
-                        </div>
-                        {% endif %}
+                <tr>
+                    <td>{{ interview.role }}</td>
+                    <td>
                         {% if interview.status == 'completed' %}
-                        <div style="display: flex; gap: 0.5rem;">
-                            <a href="{{ url_for('interview.view_interview_report', session_id=interview.id) }}" class="btn btn-secondary" style="font-size: 0.8rem; padding: 0.5rem 1rem;">
-                                <i class="fas fa-eye"></i> View
-                            </a>
-                            <a href="{{ url_for('interview.download_interview_history', session_id=interview.id) }}" class="btn btn-secondary" style="font-size: 0.8rem; padding: 0.5rem 1rem;">
-                                <i class="fas fa-download"></i> Download
-                            </a>
-                        </div>
+                        <span class="tag tag-ok">Completed</span>
+                        {% else %}
+                        <span class="tag tag-warn">{{ interview.status|capitalize }}</span>
                         {% endif %}
-                    </div>
-                </div>
+                    </td>
+                    <td>{{ interview.overall_score or 0 }}%</td>
+                    <td>{{ interview.created_at.strftime('%b %d, %Y') }}</td>
+                    <td>
+                        {% if interview.status == 'completed' %}
+                        <div class="action-row table-actions">
+                            <a href="{{ url_for('interview.view_interview_report', session_id=interview.id) }}" class="btn btn-secondary">View</a>
+                            <a href="{{ url_for('interview.download_interview_history', session_id=interview.id) }}" class="btn btn-secondary">Download</a>
+                            <form method="POST" action="{{ url_for('dashboard.delete_interview', session_id=interview.id) }}" onsubmit="return confirm('Delete this interview session permanently?')" style="display:inline">
+                                <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Delete</button>
+                            </form>
+                        </div>
+                        {% else %}
+                        <span class="page-subtitle">-</span>
+                        {% endif %}
+                    </td>
+                </tr>
                 {% endfor %}
-            </div>
-        </div>
+            </tbody>
+        </table>
         {% endif %}
-        
-        <div style="text-align: center; margin-top: 2rem;">
-            <a href="{{ url_for('dashboard.history') }}" class="btn btn-secondary">
-                <i class="fas fa-history"></i> View Full History
-            </a>
-        </div>
-    </div>
+    </section>
     {% else %}
-    <div class="card" style="text-align: center; padding: 3rem;">
-        <i class="fas fa-inbox" style="font-size: 4rem; color: var(--text-secondary); margin-bottom: 1rem;"></i>
-        <h3>No Activity Yet</h3>
-        <p style="color: var(--text-secondary); margin-bottom: 2rem;">Start by analyzing a resume or taking a mock interview!</p>
-        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-            <a href="{{ url_for('resume.analyzer') }}" class="btn btn-primary">
-                <i class="fas fa-file-alt"></i> Analyze Resume
-            </a>
-            <a href="{{ url_for('interview.interview') }}" class="btn btn-secondary">
-                <i class="fas fa-microphone"></i> Mock Interview
-            </a>
+    <section class="empty-state section-card">
+        <i class="fas fa-box-open empty-state-icon"></i>
+        <p class="empty-state-copy">No activity yet. Start with a resume analysis or a mock interview.</p>
+        <div class="action-row action-row-mt-empty account-actions">
+            <a href="{{ url_for('resume.analyzer') }}" class="btn btn-primary">Analyze Resume</a>
+            <a href="{{ url_for('interview.interview') }}" class="btn btn-secondary">Mock Interview</a>
         </div>
-    </div>
+    </section>
     {% endif %}
 </div>
 {% endblock %}

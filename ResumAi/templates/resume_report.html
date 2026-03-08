@@ -7,39 +7,36 @@
 
 <div class="container">
     <div class="report-wrap">
-        <!-- Header Section -->
         <div class="report-header">
             <h1>Resume Analysis Results</h1>
             <span class="role-badge">{{ analysis.role_label }}</span>
         </div>
 
-        <!-- Score Section -->
         <div class="score-layout">
             <div class="score-card">
                 <p class="score-card-label">Overall ATS Score</p>
-                <div class="score-ring" style="--p: {{ analysis.ats_score }};"></div>
+                <div class="score-ring" data-score="{{ analysis.ats_score }}"></div>
                 <div class="score-ring-text">{{ analysis.ats_score }}</div>
                 <div class="score-label">out of 100</div>
                 <span class="score-pill">{{ analysis.score_label|upper }}</span>
             </div>
 
             <div class="explain-card">
-                <h3>{{ analysis.score_label }} – {{ analysis.readiness_level }}</h3>
+                <h3>{{ analysis.score_label }} � {{ analysis.readiness_level }}</h3>
                 <p>{{ analysis.score_explanation }}</p>
                 <div class="info-point">
-                    <strong>📈 Experience:</strong> {{ analysis.experience_level }}
+                    <strong>?? Experience:</strong> {{ analysis.experience_level }}
                 </div>
                 <div class="info-point">
-                    <strong>🏷️ Keyword Match:</strong> {{ analysis.keyword_coverage }}% ({{ analysis.matched_keywords|length }}/{{ analysis.keyword_total }})
+                    <strong>??? Keyword Match:</strong> {{ analysis.keyword_coverage }}% ({{ analysis.matched_keywords|length }}/{{ analysis.keyword_total }})
                 </div>
                 <div class="info-point">
-                    <strong>📑 Sections:</strong> {{ analysis.sections_present }}/6
+                    <strong>?? Sections:</strong> {{ analysis.sections_present }}/6
                 </div>
             </div>
         </div>
 
-        <!-- Key Metrics Breakdown -->
-        <h2 class="section-heading">📊 Key Metrics Breakdown</h2>
+        <h2 class="section-heading">?? Key Metrics Breakdown</h2>
         <div class="metric-grid">
             {% for m in analysis.detailed_metrics %}
             <div class="metric">
@@ -56,16 +53,14 @@
             {% endfor %}
         </div>
 
-        <!-- Detailed Analysis -->
-        <h2 class="section-heading">🔍 Detailed Analysis</h2>
+        <h2 class="section-heading">?? Detailed Analysis</h2>
         <div class="analysis-grid">
-            <!-- Left: Keyword Analysis -->
             <div class="analysis-panel">
                 <h3><i class="fas fa-key"></i> Keyword Analysis</h3>
 
                 <div class="keyword-subsection">
-                    <div class="keyword-subsection-label" style="color: var(--success);">
-                        ✓ Required Skills Present ({{ analysis.required_matched|length }})
+                    <div class="keyword-subsection-label keyword-subsection-success">
+                        ? Required Skills Present ({{ analysis.required_matched|length }})
                     </div>
                     <div class="keyword-list">
                         {% for kw in analysis.required_matched %}
@@ -77,8 +72,8 @@
                 </div>
 
                 <div class="keyword-subsection">
-                    <div class="keyword-subsection-label" style="color: var(--danger);">
-                        ✕ Missing Required Skills ({{ analysis.required_missing|length }})
+                    <div class="keyword-subsection-label keyword-subsection-danger">
+                        ? Missing Required Skills ({{ analysis.required_missing|length }})
                     </div>
                     <div class="keyword-list">
                         {% for kw in analysis.required_missing %}
@@ -90,8 +85,8 @@
                 </div>
 
                 <div class="keyword-subsection">
-                    <div class="keyword-subsection-label" style="color: var(--success);">
-                        ✓ Nice-to-Have Skills ({{ analysis.nice_to_have_matched|length }})
+                    <div class="keyword-subsection-label keyword-subsection-success">
+                        ? Nice-to-Have Skills ({{ analysis.nice_to_have_matched|length }})
                     </div>
                     <div class="keyword-list">
                         {% for kw in analysis.nice_to_have_matched %}
@@ -103,7 +98,6 @@
                 </div>
             </div>
 
-            <!-- Right: Formatting & Content -->
             <div class="analysis-panel">
                 <h3><i class="fas fa-file-alt"></i> Formatting &amp; Content</h3>
 
@@ -121,7 +115,7 @@
                 </div>
 
                 <div class="sections-checklist">
-                    <h4>📋 Sections Present ({{ analysis.sections_present }}/6)</h4>
+                    <h4>?? Sections Present ({{ analysis.sections_present }}/6)</h4>
                     {% for rec in analysis.section_recommendations %}
                     <div class="section-check-item">
                         {% if rec.status == 'good' %}
@@ -136,50 +130,47 @@
             </div>
         </div>
 
-        <!-- Strong Areas -->
         <div class="feedback-section strong">
-            <h3>✅ Strong Areas</h3>
+            <h3>? Strong Areas</h3>
             {% for p in analysis.strong_points %}
             <div class="feedback-item">
-                <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                <i class="fas fa-check-circle feedback-icon-success"></i>
                 <span>{{ p }}</span>
             </div>
             {% else %}
             <div class="feedback-item">
-                <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                <i class="fas fa-check-circle feedback-icon-success"></i>
                 <span>No strong points detected.</span>
             </div>
             {% endfor %}
         </div>
 
-        <!-- Areas for Improvement -->
         <div class="feedback-section weak">
-            <h3>⚠️ Areas for Improvement</h3>
+            <h3>?? Areas for Improvement</h3>
             {% for p in analysis.weak_points %}
             <div class="feedback-item">
-                <i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i>
+                <i class="fas fa-exclamation-triangle feedback-icon-warning"></i>
                 <span>{{ p }}</span>
             </div>
             {% else %}
             <div class="feedback-item">
-                <i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i>
+                <i class="fas fa-exclamation-triangle feedback-icon-warning"></i>
                 <span>No major weaknesses detected.</span>
             </div>
             {% endfor %}
             {% for p in analysis.recommended_additions %}
             <div class="feedback-item">
-                <i class="fas fa-plus-circle" style="color: var(--warning);"></i>
+                <i class="fas fa-plus-circle feedback-icon-warning"></i>
                 <span>{{ p }}</span>
             </div>
             {% endfor %}
         </div>
 
-        <!-- Prioritized Improvement Suggestions -->
         <div class="feedback-section suggestions">
-            <h3>🎯 Prioritized Improvement Suggestions</h3>
+            <h3>?? Prioritized Improvement Suggestions</h3>
             {% for s in analysis.suggestions %}
             <div class="feedback-item">
-                <i class="fas fa-lightbulb" style="color: var(--primary);"></i>
+                <i class="fas fa-lightbulb feedback-icon-primary"></i>
                 <span>
                     {% if loop.index <= 2 %}
                     <span class="priority-label priority-high">Priority {{ loop.index }}</span>
@@ -191,56 +182,27 @@
             </div>
             {% else %}
             <div class="feedback-item">
-                <i class="fas fa-lightbulb" style="color: var(--primary);"></i>
+                <i class="fas fa-lightbulb feedback-icon-primary"></i>
                 <span>No additional suggestions.</span>
             </div>
             {% endfor %}
         </div>
 
-        <!-- Resume Format Best Practices -->
         <div class="best-practices">
-            <h3>📋 Resume Format Best Practices</h3>
+            <h3>?? Resume Format Best Practices</h3>
             <div class="bp-grid">
-                <div class="bp-item">
-                    <i class="fas fa-check-circle"></i>
-                    <span><span class="bp-emoji">📝</span> Use consistent formatting throughout</span>
-                </div>
-                <div class="bp-item">
-                    <i class="fas fa-check-circle"></i>
-                    <span><span class="bp-emoji">📧</span> Include contact information at the top</span>
-                </div>
-                <div class="bp-item">
-                    <i class="fas fa-check-circle"></i>
-                    <span><span class="bp-emoji">📑</span> Use clear section headings</span>
-                </div>
-                <div class="bp-item">
-                    <i class="fas fa-check-circle"></i>
-                    <span><span class="bp-emoji">📄</span> Keep to 1-2 pages</span>
-                </div>
-                <div class="bp-item">
-                    <i class="fas fa-check-circle"></i>
-                    <span><span class="bp-emoji">🔹</span> Use bullet points for experience</span>
-                </div>
-                <div class="bp-item">
-                    <i class="fas fa-check-circle"></i>
-                    <span><span class="bp-emoji">🔑</span> Include relevant keywords naturally</span>
-                </div>
-                <div class="bp-item">
-                    <i class="fas fa-check-circle"></i>
-                    <span><span class="bp-emoji">📊</span> Quantify achievements where possible</span>
-                </div>
-                <div class="bp-item">
-                    <i class="fas fa-check-circle"></i>
-                    <span><span class="bp-emoji">✉️</span> Use a professional email address</span>
-                </div>
-                <div class="bp-item">
-                    <i class="fas fa-check-circle"></i>
-                    <span><span class="bp-emoji">💾</span> Save and submit as PDF format</span>
-                </div>
+                <div class="bp-item"><i class="fas fa-check-circle"></i><span><span class="bp-emoji">??</span> Use consistent formatting throughout</span></div>
+                <div class="bp-item"><i class="fas fa-check-circle"></i><span><span class="bp-emoji">??</span> Include contact information at the top</span></div>
+                <div class="bp-item"><i class="fas fa-check-circle"></i><span><span class="bp-emoji">??</span> Use clear section headings</span></div>
+                <div class="bp-item"><i class="fas fa-check-circle"></i><span><span class="bp-emoji">??</span> Keep to 1-2 pages</span></div>
+                <div class="bp-item"><i class="fas fa-check-circle"></i><span><span class="bp-emoji">??</span> Use bullet points for experience</span></div>
+                <div class="bp-item"><i class="fas fa-check-circle"></i><span><span class="bp-emoji">??</span> Include relevant keywords naturally</span></div>
+                <div class="bp-item"><i class="fas fa-check-circle"></i><span><span class="bp-emoji">??</span> Quantify achievements where possible</span></div>
+                <div class="bp-item"><i class="fas fa-check-circle"></i><span><span class="bp-emoji">??</span> Use a professional email address</span></div>
+                <div class="bp-item"><i class="fas fa-check-circle"></i><span><span class="bp-emoji">??</span> Save and submit as PDF format</span></div>
             </div>
         </div>
 
-        <!-- Action Buttons -->
         <div class="action-buttons">
             <a href="/resume/report/download" class="btn btn-secondary">
                 <i class="fas fa-download"></i> Download PDF Report

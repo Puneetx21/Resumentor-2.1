@@ -1,6 +1,7 @@
 import os
 from flask import Flask
 from dotenv import load_dotenv
+from sqlalchemy import inspect, text
 from .extensions import db
 from .core.routes import core_bp
 # from .extensions import db
@@ -67,6 +68,7 @@ def create_app():
     
     # Create tables
     with app.app_context():
+        _ensure_auth_columns()
         db.create_all()
 
     # Register blueprint
@@ -78,3 +80,19 @@ def create_app():
     app.register_blueprint(resume_bp)
     app.register_blueprint(interview_bp)
     return app
+
+
+def _ensure_auth_columns():
+    """Apply lightweight schema compatibility updates for auth fields."""
+    try:
+        inspector = inspect(db.engine)
+        table_names = inspector.get_table_names()
+        if 'user' not in table_names:
+            return
+
+        columns = {col['name'] for col in inspector.get_columns('user')}
+        if 'password_hash' not in columns:
+            db.session.execute(text('ALTER TABLE "user" ADD COLUMN password_hash VARCHAR(255)'))
+            db.session.commit()
+    except Exception:
+        db.session.rollback()

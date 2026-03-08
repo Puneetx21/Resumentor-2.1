@@ -3,60 +3,71 @@
 {% block title %}SmartATS - AI Resume Analyzer{% endblock %}
 
 {% block content %}
-<div style="text-align: center; padding: 4rem 0;">
-    <h1 style="font-size: 3.5rem; margin-bottom: 1rem; background: linear-gradient(135deg, var(--accent), #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
-        Welcome to <strong>SmartATS</strong> 🚀
-    </h1>
-    <p style="font-size: 1.3rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto 2rem;">
-        Your AI-powered Resume Analyzer & Mock Interview Coach for tech roles
-    </p>
-    
-    {% if not current_user.is_authenticated %}
-    <div style="background: linear-gradient(135deg, #dbeafe, #e0e7ff); padding: 1rem 2rem; border-radius: 12px; max-width: 700px; margin: 0 auto 2rem; border-left: 4px solid #3b82f6;">
-        <p style="margin: 0; color: #1e40af; font-size: 1.05rem;">
-            <i class="fas fa-info-circle"></i> <strong>Guest Mode:</strong> You can use all features now! 
-            <a href="{{ url_for('auth.login') }}" style="color: #3b82f6; text-decoration: underline;">Sign in</a> to save your history.
-        </p>
-    </div>
-    {% else %}
-    <div style="background: linear-gradient(135deg, #dcfce7, #d1fae5); padding: 1rem 2rem; border-radius: 12px; max-width: 700px; margin: 0 auto 2rem; border-left: 4px solid #10b981;">
-        <p style="margin: 0; color: #166534; font-size: 1.05rem;">
-            <i class="fas fa-check-circle"></i> Welcome back, <strong>{{ current_user.name }}</strong>! 
-            <a href="{{ url_for('dashboard.dashboard') }}" style="color: #059669; text-decoration: underline;">View Dashboard</a>
-        </p>
-    </div>
-    {% endif %}
+<div class="page-shell">
+    <section class="hero-panel">
+        <h1 class="hero-title">Build Job-Ready Resumes and Interview Confidence</h1>
+        <p class="hero-copy">SmartATS gives you practical ATS scoring, targeted keyword feedback, and role-specific interview coaching in one workflow.</p>
 
-    <div style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; margin-bottom: 3rem;">
-        <a href="{{ url_for('resume.analyzer') }}" style="background: var(--accent); color: white; padding: 1rem 2rem; border-radius: 12px; text-decoration: none; font-weight: 600; box-shadow: var(--shadow); transition: all 0.3s;">
-            <i class="fas fa-file-alt"></i> Analyze Resume
-        </a>
-        <a href="{{ url_for('interview.interview') }}" style="background: transparent; color: var(--accent); padding: 1rem 2rem; border: 2px solid var(--accent); border-radius: 12px; text-decoration: none; font-weight: 600; transition: all 0.3s;">
-            <i class="fas fa-microphone"></i> Mock Interview
-        </a>
-        {% if current_user.is_authenticated %}
-        <a href="{{ url_for('dashboard.history') }}" style="background: transparent; color: #8b5cf6; padding: 1rem 2rem; border: 2px solid #8b5cf6; border-radius: 12px; text-decoration: none; font-weight: 600; transition: all 0.3s;">
-            <i class="fas fa-history"></i> My History
-        </a>
+        <div class="action-row action-row-home">
+            <a href="{{ url_for('resume.analyzer') }}" class="btn btn-primary"><i class="fas fa-file-alt"></i> Analyze Resume</a>
+            <a href="{{ url_for('interview.interview') }}" class="btn btn-secondary"><i class="fas fa-microphone"></i> Start Mock Interview</a>
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('dashboard.history') }}" class="btn btn-secondary"><i class="fas fa-history"></i> View History</a>
+            {% endif %}
+        </div>
+
+        {% if not current_user.is_authenticated %}
+        <div class="soft-note note-mt">
+            <i class="fas fa-user-clock"></i> Guest mode is active. <a href="{{ url_for('auth.login') }}" class="link-note">Login</a> to save reports and progress.
+        </div>
+        {% else %}
+        <div class="soft-note note-mt">
+            <i class="fas fa-check-circle"></i> Welcome back {{ current_user.name }}. Continue from your <a href="{{ url_for('dashboard.dashboard') }}" class="link-note">dashboard</a>.
+        </div>
         {% endif %}
-    </div>
+    </section>
 
-    <div style="background: var(--bg-primary); padding: 2.5rem; border-radius: 20px; box-shadow: var(--shadow); max-width: 800px; margin: 0 auto;">
-        <h2 style="margin-bottom: 1.5rem; color: var(--accent);"><i class="fas fa-lightbulb"></i> How it works</h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
-            <div>
-                <h3>1. Upload Resume</h3>
-                <p>Drag & drop your PDF. Select tech role (Python, Web Dev, AI, etc.)</p>
+    <section class="feature-grid stagger-cards">
+        <article class="feature-tile">
+            <h3 class="section-title"><i class="fas fa-magnifying-glass-chart"></i> ATS Insights</h3>
+            <p class="page-subtitle">Role-fit score, missing keywords, strengths, and prioritized fixes.</p>
+        </article>
+        <article class="feature-tile">
+            <h3 class="section-title"><i class="fas fa-bolt"></i> Fast Reports</h3>
+            <p class="page-subtitle">Generate readable PDF reports for resumes and interviews instantly.</p>
+        </article>
+        <article class="feature-tile">
+            <h3 class="section-title"><i class="fas fa-headphones"></i> Interview Practice</h3>
+            <p class="page-subtitle">Structured intro, technical, and pressure rounds with scoring.</p>
+        </article>
+        <article class="feature-tile">
+            <h3 class="section-title"><i class="fas fa-layer-group"></i> Continuous Tracking</h3>
+            <p class="page-subtitle">Saved history makes your improvements measurable over time.</p>
+        </article>
+    </section>
+
+    <section class="section-card">
+        <div class="section-head">
+            <h2 class="section-title"><i class="fas fa-diagram-project"></i> How It Works</h2>
+        </div>
+        <div class="kpi-grid stagger-cards">
+            <div class="kpi-card">
+                <div class="kpi-value">1</div>
+                <div class="kpi-label">Upload your PDF resume and choose a target role.</div>
             </div>
-            <div>
-                <h3>2. Get ATS Score</h3>
-                <p>Instant analysis + missing keywords + improvement suggestions</p>
+            <div class="kpi-card">
+                <div class="kpi-value">2</div>
+                <div class="kpi-label">Get ATS score, keyword coverage, and improvement actions.</div>
             </div>
-            <div>
-                <h3>3. Mock Interview</h3>
-                <p>30-min live voice interview with AI + detailed feedback report</p>
+            <div class="kpi-card">
+                <div class="kpi-value">3</div>
+                <div class="kpi-label">Run mock interview rounds and receive detailed feedback.</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value">4</div>
+                <div class="kpi-label">Download reports and track progress from dashboard history.</div>
             </div>
         </div>
-    </div>
+    </section>
 </div>
 {% endblock %}

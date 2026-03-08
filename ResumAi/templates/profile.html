@@ -3,97 +3,43 @@
 {% block title %}Profile - SmartATS{% endblock %}
 
 {% block content %}
-<div class="container">
-    <!-- Header -->
-    <div style="margin-bottom: 2rem;">
-        <a href="{{ url_for('dashboard.dashboard') }}" style="color: var(--text-secondary); text-decoration: none; display: inline-block; margin-bottom: 1rem;">
-            <i class="fas fa-arrow-left"></i> Back to Dashboard
-        </a>
-        <h1 style="font-size: 2.5rem;">
-            <i class="fas fa-user-circle"></i> My Profile
-        </h1>
-    </div>
-
-    <!-- Profile Card -->
-    <div class="card" style="margin-bottom: 2rem;">
-        <div style="display: flex; align-items: center; gap: 2rem; flex-wrap: wrap;">
-            <div style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center;">
-                <i class="fas fa-user" style="font-size: 3rem; color: white;"></i>
-            </div>
-            <div style="flex: 1; min-width: 250px;">
-                <h2 style="margin-bottom: 0.5rem;">{{ profile.name }}</h2>
-                <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">
-                    <i class="fas fa-envelope"></i> {{ profile.email }}
-                </p>
-                <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">
-                    <i class="fas fa-briefcase"></i> {{ profile.role }}
-                </p>
-                <p style="color: var(--text-secondary);">
-                    <i class="fas fa-calendar"></i> Member since {{ profile.member_since }}
-                </p>
+<div class="page-shell">
+    <section class="hero-panel account-hero">
+        <div class="page-header">
+            <div>
+                <a href="{{ url_for('dashboard.dashboard') }}" class="page-subtitle link-muted"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+                <p class="account-kicker">Account Details</p>
+                <h1 class="page-title page-title-tight"><i class="fas fa-user-circle"></i> My Profile</h1>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- Statistics -->
-    <div class="card">
-        <h2 style="margin-bottom: 1.5rem;"><i class="fas fa-chart-line"></i> Your Statistics</h2>
-        
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
-            <div style="text-align: center; padding: 1.5rem; background: var(--bg-secondary); border-radius: 12px;">
-                <div style="font-size: 3rem; color: #3b82f6; margin-bottom: 0.5rem;">
-                    {{ profile.total_analyses }}
-                </div>
-                <h3 style="font-size: 1.1rem; color: var(--text-secondary); font-weight: 600;">
-                    Resume Analyses
-                </h3>
-                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">
-                    Total resumes analyzed for ATS optimization
-                </p>
-            </div>
-
-            <div style="text-align: center; padding: 1.5rem; background: var(--bg-secondary); border-radius: 12px;">
-                <div style="font-size: 3rem; color: #8b5cf6; margin-bottom: 0.5rem;">
-                    {{ profile.total_interviews }}
-                </div>
-                <h3 style="font-size: 1.1rem; color: var(--text-secondary); font-weight: 600;">
-                    Mock Interviews
-                </h3>
-                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">
-                    Practice interviews completed
-                </p>
-            </div>
-
-            <div style="text-align: center; padding: 1.5rem; background: var(--bg-secondary); border-radius: 12px;">
-                <div style="font-size: 3rem; color: #10b981; margin-bottom: 0.5rem;">
-                    {{ profile.avg_ats_score }}%
-                </div>
-                <h3 style="font-size: 1.1rem; color: var(--text-secondary); font-weight: 600;">
-                    Average ATS Score
-                </h3>
-                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">
-                    Your average resume optimization score
-                </p>
-            </div>
+    <section class="section-card profile-grid">
+        <div class="profile-avatar">
+            <i class="fas fa-user"></i>
         </div>
-
-        <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border); text-align: center;">
-            <h3 style="margin-bottom: 1rem;">Keep Improving!</h3>
-            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
-                Continue analyzing your resumes and practicing interviews to land your dream job.
-            </p>
-            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                <a href="{{ url_for('resume.analyzer') }}" class="btn btn-primary">
-                    <i class="fas fa-file-alt"></i> Analyze Resume
-                </a>
-                <a href="{{ url_for('interview.interview') }}" class="btn btn-secondary">
-                    <i class="fas fa-microphone"></i> Mock Interview
-                </a>
-                <a href="{{ url_for('dashboard.history') }}" class="btn btn-secondary">
-                    <i class="fas fa-history"></i> View History
-                </a>
-            </div>
+        <div>
+            <h2 class="profile-name">{{ profile.name }}</h2>
+            <p class="page-subtitle"><i class="fas fa-envelope"></i> {{ profile.email }}</p>
+            <p class="page-subtitle"><i class="fas fa-briefcase"></i> {{ profile.role }}</p>
+            <p class="page-subtitle"><i class="fas fa-calendar"></i> Member since {{ profile.member_since }}</p>
         </div>
-    </div>
+    </section>
+
+    <section class="kpi-grid stagger-cards">
+        <article class="kpi-card"><div class="kpi-value">{{ profile.total_analyses }}</div><div class="kpi-label">Resume Analyses</div></article>
+        <article class="kpi-card"><div class="kpi-value">{{ profile.total_interviews }}</div><div class="kpi-label">Mock Interviews</div></article>
+        <article class="kpi-card"><div class="kpi-value">{{ profile.avg_ats_score }}%</div><div class="kpi-label">Average ATS Score</div></article>
+    </section>
+
+    <section class="section-card">
+        <h3 class="section-title"><i class="fas fa-road"></i> Continue Improving</h3>
+        <p class="page-subtitle">Use resume analysis and interview practice together for measurable progression.</p>
+        <div class="action-row action-row-mt-lg account-actions">
+            <a href="{{ url_for('resume.analyzer') }}" class="btn btn-primary">Analyze Resume</a>
+            <a href="{{ url_for('interview.interview') }}" class="btn btn-secondary">Mock Interview</a>
+            <a href="{{ url_for('dashboard.history') }}" class="btn btn-secondary">History</a>
+        </div>
+    </section>
 </div>
 {% endblock %}

@@ -1,31 +1,28 @@
 {% extends "base.html" %}
 
-{% block title %}ResumeAI - Mock Interview{% endblock %}
+{% block title %}Mock Interview - SmartATS{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div style="text-align: center; margin-bottom: 2rem;">
-        <h1 style="font-size: 2.5rem; margin-bottom: 0.75rem;">
-            <i class="fas fa-microphone"></i> Mock Interview (Logic Mode)
-        </h1>
-        <p style="color: var(--text-secondary);">
-            Structured interview with 15-20 questions across intro, technical, and pressure rounds.
-        </p>
-    </div>
+<div class="page-shell">
+    <section class="page-header">
+        <div>
+            <h1 class="page-title"><i class="fas fa-microphone-lines"></i> Mock Interview Lab</h1>
+            <p class="page-subtitle">Structured rounds with live scoring and response coaching.</p>
+        </div>
+    </section>
 
     {% if not current_user.is_authenticated %}
-    <div style="background: linear-gradient(135deg, #fef3c7, #fde68a); padding: 1rem 1.5rem; border-radius: 12px; margin-bottom: 1.25rem; border-left: 4px solid #f59e0b;">
-        <strong style="color: #92400e;">Guest Mode:</strong>
-        <span style="color: #92400e;">Interview is not saved in dashboard history. </span>
-        <a href="{{ url_for('auth.login') }}" style="color: #d97706; text-decoration: underline; font-weight: 600;">Login to save reports</a>
+    <div class="soft-note">
+        <i class="fas fa-user-clock"></i> Guest mode active. Your interview session will not be saved in dashboard history.
+        <a href="{{ url_for('auth.login') }}" class="link-note">Login</a> to save reports.
     </div>
     {% endif %}
 
-    <div class="card" style="margin-bottom: 1.25rem;">
-        <div style="display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 1rem; align-items: end;">
+    <section class="section-card">
+        <div class="kpi-grid kpi-grid-layout">
             <div>
-                <label for="jobRole" style="display:block; font-weight: 600; margin-bottom: 0.4rem;">Select tech role</label>
-                <select id="jobRole" style="width: 100%; padding: 0.75rem; border-radius: 10px; border: 2px solid var(--border);">
+                <label for="jobRole" class="form-label">Select Tech Role</label>
+                <select id="jobRole">
                     <option value="web-developer">Web Developer</option>
                     <option value="python-developer">Python Developer</option>
                     <option value="java-developer">Java Developer</option>
@@ -39,63 +36,54 @@
                     <option value="devops-engineer">DevOps Engineer</option>
                 </select>
             </div>
-            <div style="text-align:center;">
-                <div style="font-size: 0.9rem; color: var(--text-secondary);">Timer</div>
-                <div id="timer" style="font-size: 2rem; font-weight: 700;">00:00</div>
+            <div>
+                <label class="form-label">Timer</label>
+                <div id="timer" class="kpi-value timer-value">00:00</div>
             </div>
-            <div style="display:flex; gap: 0.5rem; justify-content: flex-end;">
+            <div class="action-row action-row-end">
                 <button id="startBtn" class="btn btn-primary"><i class="fas fa-play"></i> Start</button>
                 <button id="endBtn" class="btn btn-secondary" disabled><i class="fas fa-stop"></i> End</button>
             </div>
         </div>
-    </div>
+    </section>
 
-    <div style="display:grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 1rem;">
-        <div class="card">
-            <div style="display:flex; align-items:center; justify-content: space-between; margin-bottom: 0.75rem;">
-                <h3 style="margin:0;"><i class="fas fa-question-circle"></i> Current Question</h3>
-                <span id="questionMeta" style="font-size:0.9rem; color: var(--text-secondary);">Not started</span>
+    <section class="kpi-grid kpi-grid-interview">
+        <article class="section-card">
+            <div class="section-head">
+                <h2 class="section-title"><i class="fas fa-question-circle"></i> Current Question</h2>
+                <span id="questionMeta" class="page-subtitle">Not started</span>
             </div>
 
-            <div id="questionRound" style="font-size: 0.85rem; font-weight: 600; color:#1e40af; margin-bottom: 0.4rem;"></div>
-            <div style="display:flex; align-items:center; gap: 0.5rem; margin-bottom: 0.75rem;">
-                <button id="speakBtn" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size:0.85rem;" disabled title="Listen to the question">
-                    <i class="fas fa-volume-up"></i> Listen
-                </button>
-                <button id="stopSpeakBtn" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size:0.85rem; background:#e5e7eb; color:#6b7280; display:none;" disabled title="Stop speaking">
-                    <i class="fas fa-stop"></i> Stop
-                </button>
-            </div>
-            <div id="questionBox" style="padding: 1rem; border-radius: 10px; background: var(--bg-secondary); min-height: 90px; margin-bottom: 1rem;">
-                Click Start to begin the interview.
+            <div id="questionRound" class="tag tag-warn"></div>
+
+            <div class="action-row question-row">
+                <button id="speakBtn" class="btn btn-secondary" disabled title="Listen to the question"><i class="fas fa-volume-up"></i> Listen</button>
+                <button id="stopSpeakBtn" class="btn btn-secondary stop-speaking" disabled title="Stop speaking"><i class="fas fa-stop"></i> Stop</button>
             </div>
 
-            <div style="display:flex; align-items:center; gap: 0.75rem; margin-bottom: 0.5rem;">
-                <label style="font-weight: 600;">Answer mode:</label>
-                <label><input type="radio" name="answerMode" value="text" checked> Type</label>
-                <label><input type="radio" name="answerMode" value="oral"> Oral</label>
-                <button id="recordBtn" class="btn btn-secondary" style="padding: 0.35rem 0.75rem; font-size:0.85rem;" disabled>
-                    <i class="fas fa-microphone"></i> Speak
-                </button>
+            <div id="questionBox" class="section-card question-box">Click Start to begin the interview.</div>
+
+            <div class="action-row mode-row">
+                <strong>Answer mode:</strong>
+                <label class="radio-inline"><input type="radio" name="answerMode" value="text" checked> Type</label>
+                <label class="radio-inline"><input type="radio" name="answerMode" value="oral"> Oral</label>
+                <button id="recordBtn" class="btn btn-secondary" disabled><i class="fas fa-microphone"></i> Speak</button>
             </div>
 
-            <textarea id="answerInput" rows="5" style="width:100%; border-radius: 10px; border:2px solid var(--border); padding:0.8rem;" placeholder="Type your answer or use oral mode to dictate."></textarea>
+            <textarea id="answerInput" rows="5" placeholder="Type your answer or use oral mode to dictate."></textarea>
+            <div id="lastFeedback" class="soft-note feedback-hidden"></div>
 
-            <div id="lastFeedback" style="display:none; margin-top:0.75rem; font-size:0.92rem; color:#1e3a8a;"></div>
-
-            <div style="margin-top: 1rem; display:flex; justify-content: flex-end; gap: 0.5rem;">
-                <button id="nextBtn" class="btn btn-primary" disabled>
-                    <i class="fas fa-arrow-right"></i> Submit & Next
-                </button>
+            <div class="action-row next-row">
+                <button id="nextBtn" class="btn btn-primary" disabled><i class="fas fa-arrow-right"></i> Submit and Next</button>
             </div>
-        </div>
+        </article>
 
-        <div class="card">
-            <h3 style="margin-bottom: 0.75rem;"><i class="fas fa-scroll"></i> Transcript</h3>
-            <div id="transcript" style="max-height: 420px; overflow-y: auto; border-radius: 10px; background: var(--bg-secondary); padding: 0.75rem;"></div>
-            <div id="contextHint" style="margin-top:0.75rem; font-size:0.9rem; color: var(--text-secondary);"></div>
-        </div>
-    </div>
+        <article class="section-card">
+            <h3 class="section-title"><i class="fas fa-scroll"></i> Transcript</h3>
+            <div id="transcript" class="transcript-box"></div>
+            <p id="contextHint" class="page-subtitle context-hint"></p>
+        </article>
+    </section>
 </div>
 
 <script src="{{ url_for('static', filename='js/interview.js') }}"></script>
