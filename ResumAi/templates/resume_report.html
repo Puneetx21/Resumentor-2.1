@@ -1,0 +1,1226 @@
+{% extends "base.html" %}
+
+{% block title %}SmartATS - ATS Report{% endblock %}
+
+{% block content %}
+<style>
+* {
+    --primary: #1e40af;
+    --primary-light: #3b82f6;
+    --primary-lighter: #dbeafe;
+    --primary-dark: #1d4ed8;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --info: #3b82f6;
+    --dark: #0f172a;
+    --light: #f8fafc;
+    --border: #e2e8f0;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 6px rgba(0,0,0,0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+    --radius: 12px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.report-wrap {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    border-radius: 2rem;
+    padding: 3rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    box-shadow: var(--shadow-lg);
+}
+
+/* ── Header ── */
+.report-header {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2.5rem 3rem;
+    margin-bottom: 3rem;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(30, 64, 175, 0.1), 0 4px 12px rgba(0, 0, 0, 0.05);
+    animation: headerSlide 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes headerSlide {
+    from { 
+        opacity: 0; 
+        transform: translateY(-30px);
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.report-header h1 {
+    margin: 0 0 1rem 0;
+    font-size: clamp(2rem, 5vw, 2.8rem);
+    font-weight: 800;
+    color: var(--primary);
+    letter-spacing: -0.5px;
+}
+
+.role-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: #ffffff;
+    padding: 0.5rem 1.5rem;
+    border-radius: 999px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 6px 16px rgba(30, 64, 175, 0.4), inset 0 1px 3px rgba(255, 255, 255, 0.2);
+    animation: badgeGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes badgeGlow {
+    from {
+        box-shadow: 0 6px 16px rgba(30, 64, 175, 0.4), inset 0 1px 3px rgba(255, 255, 255, 0.2);
+    }
+    to {
+        box-shadow: 0 8px 24px rgba(30, 64, 175, 0.6), inset 0 2px 6px rgba(255, 255, 255, 0.3);
+    }
+}
+
+/* ── Score Section ── */
+.score-layout {
+    margin-bottom: 3rem;
+    display: grid;
+    grid-template-columns: minmax(300px, 380px) 1fr;
+    gap: 2rem;
+    animation: fadeIn 0.6s ease-out 0.1s both;
+}
+
+.score-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border: 2px solid var(--primary-lighter);
+    border-radius: var(--radius);
+    padding: 2.5rem;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(30, 64, 175, 0.12), 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: cardPop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.2s both;
+}
+
+@keyframes cardPop {
+    0% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    70% {
+        transform: scale(1.05);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.score-card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 16px 40px rgba(30, 64, 175, 0.18), 0 8px 20px rgba(0, 0, 0, 0.1);
+    transform: translateY(-6px);
+}
+
+.score-card-label {
+    margin: 0 0 0.8rem 0;
+    font-weight: 700;
+    color: var(--primary);
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.score-ring {
+    --p: 0;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 1.5rem auto;
+    border-radius: 50%;
+    background: conic-gradient(var(--primary) calc(var(--p) * 1%), var(--primary-lighter) 0);
+    display: grid;
+    place-items: center;
+    position: relative;
+    animation: scoreRingPop 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.3s both;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 8px 24px rgba(30, 64, 175, 0.25));
+}
+
+@keyframes scoreRingPop {
+    0% {
+        opacity: 0;
+        transform: scale(0.3) rotate(-180deg);
+    }
+    70% {
+        transform: scale(1.05) rotate(10deg);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+.score-ring:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 12px 32px rgba(30, 64, 175, 0.35));
+}
+
+.score-ring::before {
+    content: "";
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: var(--bg-primary, #ffffff);
+    border: 4px solid var(--border);
+    position: absolute;
+    box-shadow: inset 0 4px 12px rgba(30, 64, 175, 0.08), 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.score-ring-text {
+    position: relative;
+    z-index: 1;
+    font-size: 3rem;
+    font-weight: 900;
+    color: var(--primary);
+    line-height: 1;
+}
+
+.score-label {
+    margin-top: 0.5rem;
+    color: #64748b;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.score-pill {
+    display: inline-block;
+    margin-top: 1.5rem;
+    padding: 0.8rem 1.5rem;
+    border-radius: 999px;
+    font-size: 1rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--primary-lighter), #bfdbfe);
+    color: var(--primary);
+    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.2), inset 0 1px 3px rgba(255, 255, 255, 0.3);
+    animation: pillBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.8s both;
+}
+
+@keyframes pillBounce {
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    70% {
+        transform: scale(1.1);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.explain-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2.5rem;
+    box-shadow: 0 10px 30px rgba(30, 64, 175, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05);
+    animation: cardSlide 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.3s both;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes cardSlide {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.explain-card:hover {
+    box-shadow: 0 16px 40px rgba(30, 64, 175, 0.12), 0 8px 20px rgba(0, 0, 0, 0.08);
+    transform: translateY(-4px);
+}
+
+.explain-card h3 {
+    margin: 0 0 1.2rem 0;
+    color: var(--primary);
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.explain-card p {
+    margin: 1rem 0;
+    line-height: 1.7;
+    font-size: 1.05rem;
+    color: var(--text-primary, #1e293b);
+}
+
+.info-point {
+    display: flex;
+    align-items: center;
+    margin: 1.2rem 0;
+    padding: 1.2rem 1.5rem;
+    border-radius: 8px;
+    background: linear-gradient(135deg, rgba(30, 64, 175, 0.05), rgba(59, 130, 246, 0.02));
+    border-left: 4px solid var(--primary);
+    font-size: 1.05rem;
+    color: var(--text-primary, #1e293b);
+    line-height: 1.6;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: infoSlide 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.info-point:nth-child(3) { animation-delay: 0.5s; }
+.info-point:nth-child(4) { animation-delay: 0.6s; }
+.info-point:nth-child(5) { animation-delay: 0.7s; }
+
+@keyframes infoSlide {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.info-point:hover {
+    background: linear-gradient(135deg, rgba(30, 64, 175, 0.1), rgba(59, 130, 246, 0.05));
+    transform: translateX(4px);
+    box-shadow: 0 3px 10px rgba(30, 64, 175, 0.15);
+}
+
+.info-point strong {
+    color: var(--primary);
+    margin-right: 0.5rem;
+}
+
+/* ── Section Headings ── */
+.section-heading {
+    margin: 3rem 0 1.5rem 0;
+    color: var(--primary);
+    font-size: 1.8rem;
+    font-weight: 700;
+    text-align: center;
+    animation: sectionFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+    position: relative;
+    padding-bottom: 1rem;
+}
+
+.section-heading::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    border-radius: 2px;
+}
+
+@keyframes sectionFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ── Key Metrics Grid ── */
+.metric-grid {
+    margin-bottom: 3rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.4rem;
+}
+
+.metric {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border: 2px solid var(--primary-lighter);
+    border-radius: var(--radius);
+    padding: 1.8rem;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(30, 64, 175, 0.1), 0 3px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: metricFadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+    position: relative;
+    overflow: hidden;
+}
+
+.metric::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+    transition: left 0.5s;
+}
+
+.metric:hover::before {
+    left: 100%;
+}
+
+.metric:nth-child(1) { animation-delay: 0.1s; }
+.metric:nth-child(2) { animation-delay: 0.2s; }
+.metric:nth-child(3) { animation-delay: 0.3s; }
+.metric:nth-child(4) { animation-delay: 0.4s; }
+.metric:nth-child(5) { animation-delay: 0.5s; }
+.metric:nth-child(6) { animation-delay: 0.6s; }
+
+@keyframes metricFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.metric:hover {
+    border-color: var(--primary);
+    box-shadow: 0 16px 40px rgba(30, 64, 175, 0.18), 0 8px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-6px) scale(1.03);
+}
+
+.metric-icon {
+    font-size: 1.8rem;
+    color: var(--primary);
+    margin-bottom: 0.8rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-block;
+    filter: drop-shadow(0 2px 6px rgba(30, 64, 175, 0.2));
+}
+
+.metric:hover .metric-icon {
+    transform: scale(1.2) rotate(10deg);
+    color: var(--primary-light);
+    filter: drop-shadow(0 4px 12px rgba(59, 130, 246, 0.4));
+}
+
+.metric-title {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.metric-value {
+    margin: 0.6rem 0 0 0;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--primary);
+}
+
+.metric-value-text {
+    margin: 0.6rem 0 0 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+/* ── Detailed Analysis 2-Column ── */
+.analysis-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.analysis-panel {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(30, 64, 175, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: panelSlide 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes panelSlide {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.analysis-panel:hover {
+    box-shadow: 0 16px 40px rgba(30, 64, 175, 0.12), 0 8px 20px rgba(0, 0, 0, 0.08);
+    transform: translateY(-4px);
+}
+
+.analysis-panel h3 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.keyword-subsection {
+    margin-bottom: 1.5rem;
+}
+
+.keyword-subsection:last-child {
+    margin-bottom: 0;
+}
+
+.keyword-subsection-label {
+    margin: 0 0 0.8rem 0;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.keyword-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+.keyword-chip {
+    display: inline-block;
+    padding: 0.5rem 1.2rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: default;
+    white-space: nowrap;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: chipFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes chipFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.keyword-chip:hover {
+    transform: scale(1.08);
+}
+
+.k-match {
+    background: rgba(16, 185, 129, 0.15);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.k-miss {
+    background: rgba(239, 68, 68, 0.15);
+    color: #dc2626;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.k-nice {
+    background: rgba(16, 185, 129, 0.12);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+/* Score badges in Formatting panel */
+.format-score-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.2rem;
+    margin-bottom: 0.8rem;
+    border-radius: 8px;
+    background: linear-gradient(135deg, rgba(30, 64, 175, 0.05), rgba(59, 130, 246, 0.02));
+    border: 1px solid var(--border);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: formatFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.format-score-item:nth-child(1) { animation-delay: 0.1s; }
+.format-score-item:nth-child(2) { animation-delay: 0.2s; }
+.format-score-item:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes formatFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.format-score-item:hover {
+    background: linear-gradient(135deg, rgba(30, 64, 175, 0.1), rgba(59, 130, 246, 0.05));
+    border-color: var(--primary-lighter);
+    transform: translateX(4px);
+    box-shadow: 0 2px 8px rgba(30, 64, 175, 0.12);
+}
+
+.format-score-label {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-primary, #1e293b);
+}
+
+.format-score-badge {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    background: linear-gradient(135deg, var(--primary-lighter), #bfdbfe);
+    color: var(--primary);
+    box-shadow: 0 2px 6px rgba(30, 64, 175, 0.15);
+    transition: all 0.3s;
+}
+
+.format-score-item:hover .format-score-badge {
+    transform: scale(1.05);
+    box-shadow: 0 3px 10px rgba(30, 64, 175, 0.25);
+}
+
+/* Sections Present checklist */
+.sections-checklist {
+    margin-top: 1.5rem;
+}
+
+.sections-checklist h4 {
+    margin: 0 0 1rem 0;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--primary);
+}
+
+.section-check-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 0;
+    font-size: 0.95rem;
+    color: var(--text-primary, #1e293b);
+}
+
+.section-check-item i.fa-check-circle {
+    color: var(--success);
+}
+
+.section-check-item i.fa-times-circle {
+    color: var(--warning);
+}
+
+/* ── Feedback Sections ── */
+.feedback-section {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06), 0 3px 8px rgba(0, 0, 0, 0.04);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: feedbackSlide 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes feedbackSlide {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.feedback-section:hover {
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.08);
+    transform: translateY(-4px);
+}
+
+.feedback-section h3 {
+    margin: 0 0 1.2rem 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.feedback-section.strong {
+    border-left: 5px solid var(--success);
+}
+
+.feedback-section.strong h3 {
+    color: var(--success);
+}
+
+.feedback-section.weak {
+    border-left: 5px solid var(--warning);
+}
+
+.feedback-section.weak h3 {
+    color: var(--warning);
+}
+
+.feedback-section.suggestions {
+    border-left: 5px solid var(--success);
+}
+
+.feedback-section.suggestions h3 {
+    color: var(--success);
+}
+
+.feedback-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    padding: 0.8rem 0;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--text-primary, #1e293b);
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+
+.feedback-item:last-child {
+    border-bottom: none;
+}
+
+.feedback-item i {
+    margin-top: 0.2rem;
+    flex-shrink: 0;
+}
+
+.feedback-item .priority-label {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-right: 0.5rem;
+}
+
+.priority-high {
+    background: rgba(239, 68, 68, 0.15);
+    color: #dc2626;
+}
+
+.priority-tip {
+    background: rgba(30, 64, 175, 0.15);
+    color: var(--primary);
+}
+
+/* ── Best Practices ── */
+.best-practices {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    margin-bottom: 3rem;
+    box-shadow: 0 10px 30px rgba(30, 64, 175, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: practicesFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes practicesFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.best-practices:hover {
+    box-shadow: 0 16px 40px rgba(30, 64, 175, 0.12), 0 8px 20px rgba(0, 0, 0, 0.08);
+    transform: translateY(-4px);
+}
+
+.best-practices h3 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-align: center;
+}
+
+.bp-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+}
+
+.bp-item {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    background: linear-gradient(135deg, rgba(30, 64, 175, 0.04), rgba(59, 130, 246, 0.02));
+    font-size: 0.95rem;
+    color: var(--text-primary, #1e293b);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: bpFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.bp-item:nth-child(odd) { animation-delay: 0.05s; }
+.bp-item:nth-child(even) { animation-delay: 0.1s; }
+
+@keyframes bpFadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.bp-item:hover {
+    background: linear-gradient(135deg, rgba(30, 64, 175, 0.1), rgba(59, 130, 246, 0.05));
+    transform: translateX(4px);
+    box-shadow: 0 2px 8px rgba(30, 64, 175, 0.1);
+}
+
+.bp-item i {
+    color: var(--success);
+    flex-shrink: 0;
+    transition: all 0.3s;
+}
+
+.bp-item:hover i {
+    transform: scale(1.2);
+    color: var(--primary);
+}
+
+.bp-item .bp-emoji {
+    font-size: 1.1rem;
+}
+
+/* ── Action Buttons ── */
+.action-buttons {
+    margin-top: 3rem;
+    display: flex;
+    gap: 1.2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: buttonsFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.8s both;
+}
+
+@keyframes buttonsFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.btn {
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    border: none;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: #ffffff;
+    box-shadow: 0 6px 20px rgba(30, 64, 175, 0.35), 0 3px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+    z-index: -1;
+}
+
+.btn-primary:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.btn-primary:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(30, 64, 175, 0.45), 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.btn-secondary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--primary);
+    transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: -1;
+}
+
+.btn-secondary:hover::before {
+    left: 0;
+}
+
+.btn-secondary:hover {
+    color: #ffffff;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(30, 64, 175, 0.25);
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+    .report-wrap { padding: 2rem; }
+    .score-layout { grid-template-columns: 1fr; }
+    .analysis-grid { grid-template-columns: 1fr; }
+    .metric-grid { grid-template-columns: repeat(2, 1fr); }
+    .bp-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+    .report-wrap { padding: 1.5rem; }
+    .report-header { padding: 2rem; }
+    .report-header h1 { font-size: 1.8rem; }
+    .score-ring { width: 150px; height: 150px; }
+    .score-ring::before { width: 120px; height: 120px; }
+    .score-ring-text { font-size: 2.2rem; }
+    .section-heading { font-size: 1.4rem; margin: 2rem 0 1rem 0; }
+    .metric-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    .metric { padding: 1.2rem; }
+    .btn { padding: 0.8rem 1.5rem; font-size: 1rem; }
+}
+
+@media (max-width: 640px) {
+    .report-wrap { padding: 1rem; }
+    .metric-grid { grid-template-columns: 1fr 1fr; }
+    .action-buttons { flex-direction: column; }
+    .btn { width: 100%; justify-content: center; }
+}
+</style>
+
+<div class="container">
+    <div class="report-wrap">
+        <!-- Header Section -->
+        <div class="report-header">
+            <h1>Resume Analysis Results</h1>
+            <span class="role-badge">{{ analysis.role_label }}</span>
+        </div>
+
+        <!-- Score Section -->
+        <div class="score-layout">
+            <div class="score-card">
+                <p class="score-card-label">Overall ATS Score</p>
+                <div class="score-ring" style="--p: {{ analysis.ats_score }};"></div>
+                <div class="score-ring-text">{{ analysis.ats_score }}</div>
+                <div class="score-label">out of 100</div>
+                <span class="score-pill">{{ analysis.score_label|upper }}</span>
+            </div>
+
+            <div class="explain-card">
+                <h3>{{ analysis.score_label }} – {{ analysis.readiness_level }}</h3>
+                <p>{{ analysis.score_explanation }}</p>
+                <div class="info-point">
+                    <strong>📈 Experience:</strong> {{ analysis.experience_level }}
+                </div>
+                <div class="info-point">
+                    <strong>🏷️ Keyword Match:</strong> {{ analysis.keyword_coverage }}% ({{ analysis.matched_keywords|length }}/{{ analysis.keyword_total }})
+                </div>
+                <div class="info-point">
+                    <strong>📑 Sections:</strong> {{ analysis.sections_present }}/6
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Metrics Breakdown -->
+        <h2 class="section-heading">📊 Key Metrics Breakdown</h2>
+        <div class="metric-grid">
+            {% for m in analysis.detailed_metrics %}
+            <div class="metric">
+                <div class="metric-icon"><i class="{{ m.icon }}"></i></div>
+                <p class="metric-title">{{ m.label }}</p>
+                {% if m.type == 'text' %}
+                <p class="metric-value-text">{{ m.value }}</p>
+                {% elif m.type == 'percent' %}
+                <p class="metric-value">{{ m.value }}%</p>
+                {% else %}
+                <p class="metric-value">{{ m.value }}/100</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Detailed Analysis -->
+        <h2 class="section-heading">🔍 Detailed Analysis</h2>
+        <div class="analysis-grid">
+            <!-- Left: Keyword Analysis -->
+            <div class="analysis-panel">
+                <h3><i class="fas fa-key"></i> Keyword Analysis</h3>
+
+                <div class="keyword-subsection">
+                    <div class="keyword-subsection-label" style="color: var(--success);">
+                        ✓ Required Skills Present ({{ analysis.required_matched|length }})
+                    </div>
+                    <div class="keyword-list">
+                        {% for kw in analysis.required_matched %}
+                        <span class="keyword-chip k-match">{{ kw }}</span>
+                        {% else %}
+                        <span class="keyword-chip k-match">None found</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="keyword-subsection">
+                    <div class="keyword-subsection-label" style="color: var(--danger);">
+                        ✕ Missing Required Skills ({{ analysis.required_missing|length }})
+                    </div>
+                    <div class="keyword-list">
+                        {% for kw in analysis.required_missing %}
+                        <span class="keyword-chip k-miss">{{ kw }}</span>
+                        {% else %}
+                        <span class="keyword-chip k-miss">None missing</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="keyword-subsection">
+                    <div class="keyword-subsection-label" style="color: var(--success);">
+                        ✓ Nice-to-Have Skills ({{ analysis.nice_to_have_matched|length }})
+                    </div>
+                    <div class="keyword-list">
+                        {% for kw in analysis.nice_to_have_matched %}
+                        <span class="keyword-chip k-nice">{{ kw }}</span>
+                        {% else %}
+                        <span class="keyword-chip k-nice">None found</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Formatting & Content -->
+            <div class="analysis-panel">
+                <h3><i class="fas fa-file-alt"></i> Formatting &amp; Content</h3>
+
+                <div class="format-score-item">
+                    <span class="format-score-label">Length Score</span>
+                    <span class="format-score-badge">{{ analysis.length_score }}/100</span>
+                </div>
+                <div class="format-score-item">
+                    <span class="format-score-label">Formatting Style</span>
+                    <span class="format-score-badge">{{ analysis.formatting_score }}/100</span>
+                </div>
+                <div class="format-score-item">
+                    <span class="format-score-label">Action Verbs Quality</span>
+                    <span class="format-score-badge">{{ analysis.action_verbs_score }}/100</span>
+                </div>
+
+                <div class="sections-checklist">
+                    <h4>📋 Sections Present ({{ analysis.sections_present }}/6)</h4>
+                    {% for rec in analysis.section_recommendations %}
+                    <div class="section-check-item">
+                        {% if rec.status == 'good' %}
+                        <i class="fas fa-check-circle"></i>
+                        {% else %}
+                        <i class="fas fa-times-circle"></i>
+                        {% endif %}
+                        {{ rec.section }}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Strong Areas -->
+        <div class="feedback-section strong">
+            <h3>✅ Strong Areas</h3>
+            {% for p in analysis.strong_points %}
+            <div class="feedback-item">
+                <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                <span>{{ p }}</span>
+            </div>
+            {% else %}
+            <div class="feedback-item">
+                <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                <span>No strong points detected.</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Areas for Improvement -->
+        <div class="feedback-section weak">
+            <h3>⚠️ Areas for Improvement</h3>
+            {% for p in analysis.weak_points %}
+            <div class="feedback-item">
+                <i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i>
+                <span>{{ p }}</span>
+            </div>
+            {% else %}
+            <div class="feedback-item">
+                <i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i>
+                <span>No major weaknesses detected.</span>
+            </div>
+            {% endfor %}
+            {% for p in analysis.recommended_additions %}
+            <div class="feedback-item">
+                <i class="fas fa-plus-circle" style="color: var(--warning);"></i>
+                <span>{{ p }}</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Prioritized Improvement Suggestions -->
+        <div class="feedback-section suggestions">
+            <h3>🎯 Prioritized Improvement Suggestions</h3>
+            {% for s in analysis.suggestions %}
+            <div class="feedback-item">
+                <i class="fas fa-lightbulb" style="color: var(--primary);"></i>
+                <span>
+                    {% if loop.index <= 2 %}
+                    <span class="priority-label priority-high">Priority {{ loop.index }}</span>
+                    {% else %}
+                    <span class="priority-label priority-tip">Tip {{ loop.index - 2 }}</span>
+                    {% endif %}
+                    {{ s }}
+                </span>
+            </div>
+            {% else %}
+            <div class="feedback-item">
+                <i class="fas fa-lightbulb" style="color: var(--primary);"></i>
+                <span>No additional suggestions.</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Resume Format Best Practices -->
+        <div class="best-practices">
+            <h3>📋 Resume Format Best Practices</h3>
+            <div class="bp-grid">
+                <div class="bp-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span><span class="bp-emoji">📝</span> Use consistent formatting throughout</span>
+                </div>
+                <div class="bp-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span><span class="bp-emoji">📧</span> Include contact information at the top</span>
+                </div>
+                <div class="bp-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span><span class="bp-emoji">📑</span> Use clear section headings</span>
+                </div>
+                <div class="bp-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span><span class="bp-emoji">📄</span> Keep to 1-2 pages</span>
+                </div>
+                <div class="bp-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span><span class="bp-emoji">🔹</span> Use bullet points for experience</span>
+                </div>
+                <div class="bp-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span><span class="bp-emoji">🔑</span> Include relevant keywords naturally</span>
+                </div>
+                <div class="bp-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span><span class="bp-emoji">📊</span> Quantify achievements where possible</span>
+                </div>
+                <div class="bp-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span><span class="bp-emoji">✉️</span> Use a professional email address</span>
+                </div>
+                <div class="bp-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span><span class="bp-emoji">💾</span> Save and submit as PDF format</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a href="/resume/report/download" class="btn btn-secondary">
+                <i class="fas fa-download"></i> Download PDF Report
+            </a>
+            <a href="/resume" class="btn btn-primary">
+                <i class="fas fa-redo"></i> Analyze Another Resume
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const scoreRing = document.querySelector('.score-ring');
+    if (scoreRing) {
+        const p = scoreRing.style.getPropertyValue('--p') || 0;
+        scoreRing.style.setProperty('--p', 0);
+        setTimeout(() => {
+            scoreRing.style.setProperty('--p', p);
+        }, 100);
+    }
+});
+</script>
+{% endblock %}

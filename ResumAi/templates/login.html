@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Login - SmartATS{% endblock %}
+
+{% block content %}
+<div style="min-height: 70vh; display: flex; align-items: center; justify-content: center;">
+    <div class="card" style="max-width: 500px; width: 100%; text-align: center;">
+        <h1 style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--accent);">
+            <i class="fas fa-sign-in-alt"></i> Welcome to SmartATS
+        </h1>
+        <p style="color: var(--text-secondary); margin-bottom: 2.5rem;">
+            Sign in to save your analysis history, track progress, and access premium features
+        </p>
+        
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <a href="{{ url_for('auth.google_login') }}" class="btn btn-primary" style="justify-content: center; padding: 1rem 2rem; font-size: 1.1rem;">
+                <i class="fab fa-google"></i> Continue with Google
+            </a>
+            
+            <div style="position: relative; margin: 1rem 0;">
+                <hr style="border: none; border-top: 1px solid var(--border);">
+                <span style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--bg-primary); padding: 0 1rem; color: var(--text-secondary); font-size: 0.9rem;">
+                    or
+                </span>
+            </div>
+            
+            <a href="{{ url_for('core.home') }}" class="btn btn-secondary" style="justify-content: center; padding: 1rem 2rem;">
+                <i class="fas fa-user-secret"></i> Continue as Guest
+            </a>
+        </div>
+        
+        <div style="margin-top: 2.5rem; padding: 1.5rem; background: var(--bg-secondary); border-radius: 12px; text-align: left;">
+            <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">
+                <i class="fas fa-info-circle"></i> Why Sign In?
+            </h3>
+            <ul style="color: var(--text-secondary); font-size: 0.95rem; padding-left: 1.5rem; margin: 0;">
+                <li style="margin-bottom: 0.5rem;">📊 Save and track all your resume analyses</li>
+                <li style="margin-bottom: 0.5rem;">🎤 Access your interview history</li>
+                <li style="margin-bottom: 0.5rem;">📈 Monitor your progress over time</li>
+                <li style="margin-bottom: 0.5rem;">💾 Download past reports anytime</li>
+                <li>🚀 Get personalized recommendations</li>
+            </ul>
+        </div>
+        
+        <p style="margin-top: 2rem; color: var(--text-secondary); font-size: 0.9rem;">
+            <strong>Guest Mode:</strong> Use the app without signing in, but history won't be saved
+        </p>
+    </div>
+</div>
+{% endblock %}
