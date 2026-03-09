@@ -592,3 +592,49 @@
         margin: 0 auto;
     }
 }
+
+/* File Input Styling for Interview Resume Upload */
+.file-input {
+    width: 100%;
+    padding: 0.65rem 0.8rem;
+    font-size: 0.95rem;
+    color: var(--ink);
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.file-input:hover {
+    border-color: var(--accent);
+    background: var(--bg-secondary);
+}
+
+.file-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-shadow);
+}
+
+.file-input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.file-input::file-selector-button {
+    padding: 0.5rem 1rem;
+    margin-right: 1rem;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.file-input::file-selector-button:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+}

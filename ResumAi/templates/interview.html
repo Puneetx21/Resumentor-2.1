@@ -23,18 +23,61 @@
             <div>
                 <label for="jobRole" class="form-label">Select Tech Role</label>
                 <select id="jobRole">
+                    <option value="frontend-developer">Frontend Developer</option>
+                    <option value="backend-developer">Backend Developer</option>
+                    <option value="fullstack-developer">Fullstack Developer</option>
                     <option value="web-developer">Web Developer</option>
                     <option value="python-developer">Python Developer</option>
                     <option value="java-developer">Java Developer</option>
                     <option value="cpp-developer">C++ Developer</option>
-                    <option value="fullstack-developer">Fullstack Developer</option>
-                    <option value="frontend-developer">Frontend Developer</option>
-                    <option value="backend-developer">Backend Developer</option>
+                    <option value="javascript-developer">JavaScript Developer</option>
+                    <option value="react-developer">React Developer</option>
                     <option value="mern-stack">MERN Stack Developer</option>
+                    <option value="mean-stack">MEAN Stack Developer</option>
+                    <option value="nodejs-developer">Node.js Developer</option>
+                    <option value="ai-engineer">AI/ML Engineer</option>
+                    <option value="data-scientist">Data Scientist</option>
                     <option value="data-analyst">Data Analyst</option>
-                    <option value="ai-engineer">AI Engineer</option>
+                    <option value="data-engineer">Data Engineer</option>
                     <option value="devops-engineer">DevOps Engineer</option>
+                    <option value="cloud-engineer">Cloud Engineer (AWS/Azure/GCP)</option>
+                    <option value="mobile-developer">Mobile Developer (iOS/Android)</option>
+                    <option value="flutter-developer">Flutter Developer</option>
+                    <option value="android-developer">Android Developer</option>
+                    <option value="ios-developer">iOS Developer</option>
+                    <option value="blockchain-developer">Blockchain Developer</option>
+                    <option value="cybersecurity-engineer">Cybersecurity Engineer</option>
                 </select>
+            </div>
+            <div id="resumeOptionsContainer">
+                {% if current_user.is_authenticated %}
+                <label class="form-label">
+                    Resume Selection (Optional - Advanced Mode)
+                    <i class="fas fa-star" style="color: #f59e0b; font-size: 0.85rem;" title="Using a resume increases difficulty and personalizes questions"></i>
+                </label>
+                <div id="existingResumesBox" style="margin-bottom: 0.6rem; display: none;">
+                    <label class="radio-inline" style="display: block; margin-bottom: 0.4rem;">
+                        <input type="radio" name="resumeChoice" value="none" checked> 
+                        <span>Standard Mode (No Resume)</span>
+                    </label>
+                    <div id="existingResumesList"></div>
+                    <label class="radio-inline" style="display: block; margin-top: 0.4rem;">
+                        <input type="radio" name="resumeChoice" value="upload"> 
+                        <span>Upload New Resume</span>
+                    </label>
+                </div>
+                <div id="uploadResumeBox" style="display: none;">
+                    <input type="file" id="resumeFile" accept=".pdf" class="file-input" />
+                    <small class="page-subtitle">PDF only. Personalized questions based on your experience.</small>
+                </div>
+                {% else %}
+                <label for="resumeFile" class="form-label">
+                    Upload Resume (Optional - Advanced Mode)
+                    <i class="fas fa-star" style="color: #f59e0b; font-size: 0.85rem;" title="Using a resume increases difficulty and personalizes questions"></i>
+                </label>
+                <input type="file" id="resumeFile" accept=".pdf" class="file-input" />
+                <small class="page-subtitle">PDF only. Personalized questions based on your experience.</small>
+                {% endif %}
             </div>
             <div>
                 <label class="form-label">Timer</label>

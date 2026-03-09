@@ -11,6 +11,14 @@ let synth = window.speechSynthesis;
 let isSpeaking = false;
 let currentQuestionText = '';
 
+function enableResumeInputs() {
+    const resumeFileInput = document.getElementById('resumeFile');
+    if (resumeFileInput) resumeFileInput.disabled = false;
+    
+    const resumeChoiceInputs = document.querySelectorAll('input[name="resumeChoice"]');
+    resumeChoiceInputs.forEach(input => input.disabled = false);
+}
+
 function formatTime(sec) {
     const m = String(Math.floor(sec / 60)).padStart(2, '0');
     const s = String(sec % 60).padStart(2, '0');
@@ -166,7 +174,52 @@ document.addEventListener('DOMContentLoaded', () => {
     const stopSpeakBtn = document.getElementById('stopSpeakBtn');
     const feedbackBox = document.getElementById('lastFeedback');
 
+    const existingResumesBox = document.getElementById('existingResumesBox');
+    const existingResumesList = document.getElementById('existingResumesList');
+    const uploadResumeBox = document.getElementById('uploadResumeBox');
+    const resumeFile = document.getElementById('resumeFile');
+
     initSpeech();
+
+    // Fetch available resumes when role changes (for authenticated users)
+    if (existingResumesBox && existingResumesList) {
+        roleSelect.addEventListener('change', async () => {
+            const role = roleSelect.value;
+            try {
+                const data = await callApi('/api/interview/get_resumes', 'POST', { job_role: role });
+                if (data.resumes && data.resumes.length > 0) {
+                    existingResumesBox.style.display = 'block';
+                    existingResumesList.innerHTML = data.resumes.map(r => `
+                        <label class="radio-inline" style="display: block; margin-bottom: 0.4rem;">
+                            <input type="radio" name="resumeChoice" value="${r.id}">
+                            <span>${r.filename} (ATS: ${r.ats_score.toFixed(0)}% - ${r.created_at})</span>
+                        </label>
+                    `).join('');
+                } else {
+                    existingResumesBox.style.display = 'none';
+                    if (uploadResumeBox) uploadResumeBox.style.display = 'block';
+                }
+            } catch (err) {
+                console.error('Failed to fetch resumes:', err);
+            }
+        });
+
+        // Handle resume choice changes
+        document.addEventListener('change', (e) => {
+            if (e.target.name === 'resumeChoice') {
+                const choice = e.target.value;
+                if (uploadResumeBox) {
+                    uploadResumeBox.style.display = choice === 'upload' ? 'block' : 'none';
+                }
+                if (choice !== 'upload' && resumeFile) {
+                    resumeFile.value = ''; // Clear file selection
+                }
+            }
+        });
+
+        // Trigger initial load for default role
+        roleSelect.dispatchEvent(new Event('change'));
+    }
 
     speakBtn.addEventListener('click', () => {
         if (currentQuestionText) {
@@ -200,13 +253,65 @@ document.addEventListener('DOMContentLoaded', () => {
     startBtn.addEventListener('click', async () => {
         try {
             const role = roleSelect.value;
-            const data = await callApi('/api/interview/start', 'POST', { job_role: role });
+            
+            // Determine resume selection
+            const resumeChoiceInputs = document.querySelectorAll('input[name="resumeChoice"]');
+            let selectedResumeChoice = 'none';
+            let existingResumeId = null;
+            
+            if (resumeChoiceInputs.length > 0) {
+                for (const input of resumeChoiceInputs) {
+                    if (input.checked) {
+                        selectedResumeChoice = input.value;
+                        if (selectedResumeChoice !== 'none' && selectedResumeChoice !== 'upload') {
+                            existingResumeId = selectedResumeChoice;
+                        }
+                        break;
+                    }
+                }
+            }
+            
+            const resumeFileInput = document.getElementById('resumeFile');
+            const uploadedFile = resumeFileInput ? resumeFileInput.files[0] : null;
+            
+            let data;
+            if (selectedResumeChoice === 'upload' && uploadedFile) {
+                // Upload new resume
+                const formData = new FormData();
+                formData.append('job_role', role);
+                formData.append('resume_file', uploadedFile);
+                
+                const response = await fetch('/api/interview/start', {
+                    method: 'POST',
+                    body: formData,
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to start interview');
+                }
+                
+                data = await response.json();
+            } else if (existingResumeId) {
+                // Use existing resume
+                data = await callApi('/api/interview/start', 'POST', { 
+                    job_role: role,
+                    existing_resume_id: existingResumeId
+                });
+            } else {
+                // No resume (standard mode)
+                data = await callApi('/api/interview/start', 'POST', { job_role: role });
+            }
 
             interviewActive = true;
             startBtn.disabled = true;
             endBtn.disabled = false;
             nextBtn.disabled = false;
             roleSelect.disabled = true;
+            if (resumeFileInput) resumeFileInput.disabled = true;
+            if (resumeChoiceInputs.length > 0) {
+                resumeChoiceInputs.forEach(input => input.disabled = true);
+            }
             answerInput.value = '';
             feedbackBox.style.display = 'none';
             document.getElementById('transcript').innerHTML = '';
@@ -215,9 +320,18 @@ document.addEventListener('DOMContentLoaded', () => {
             startTimer();
             updateModeUi();
 
-            const hint = data.resume_context_used
-                ? 'Resume analysis was found for this role and used as context for evaluation.'
-                : 'No prior resume analysis found for this role. Interview is running in standalone mode.';
+            let hint = '';
+            if (data.difficulty === 'advanced') {
+                if (data.resume_source === 'uploaded') {
+                    hint = '⭐ Advanced Mode: Resume analyzed. Personalized harder questions based on your skills and experience.';
+                } else if (data.resume_source === 'reused') {
+                    hint = '⭐ Advanced Mode: Using your analyzed resume. Personalized harder questions based on your profile.';
+                }
+            } else if (data.resume_context_used) {
+                hint = 'Standard Mode: Resume analysis from your profile used for evaluation context.';
+            } else {
+                hint = 'Standard Mode: Interview running with curated technical questions.';
+            }
             document.getElementById('contextHint').textContent = hint;
         } catch (err) {
             alert(err.message);
@@ -251,6 +365,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 endBtn.disabled = true;
                 nextBtn.disabled = true;
                 roleSelect.disabled = false;
+                enableResumeInputs();
                 updateModeUi();
                 window.location.href = data.redirect_url;
                 return;
@@ -279,6 +394,7 @@ document.addEventListener('DOMContentLoaded', () => {
             endBtn.disabled = true;
             nextBtn.disabled = true;
             roleSelect.disabled = false;
+            enableResumeInputs();
             updateModeUi();
             window.location.href = data.redirect_url;
         } catch (err) {

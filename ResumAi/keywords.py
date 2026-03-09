@@ -10,5 +10,17 @@ TECH_ROLE_KEYWORDS = {
     "ai-engineer": ["python", "tensorflow", "pytorch", "scikit-learn", "keras", "opencv", "numpy", "pandas"],
     "data-analyst": ["sql", "excel", "tableau", "powerbi", "python", "r", "pandas", "sqlalchemy"],
     "devops-engineer": ["docker", "kubernetes", "jenkins", "terraform", "ansible", "aws", "azure", "ci/cd"],
-    # Add more as needed
+    "javascript-developer": ["javascript", "es6", "typescript", "node.js", "webpack", "babel", "jest", "dom", "async/await", "npm"],
+    "react-developer": ["react", "redux", "hooks", "jsx", "nextjs", "react-router", "context-api", "typescript", "testing-library", "webpack"],
+    "mean-stack": ["mongodb", "express", "angular", "node.js", "typescript", "rxjs", "mongoose"],
+    "nodejs-developer": ["node.js", "express", "fastify", "mongodb", "postgresql", "redis", "jwt", "websockets", "npm", "docker"],
+    "data-scientist": ["python", "pandas", "numpy", "scikit-learn", "tensorflow", "statistics", "matplotlib", "jupyter", "sql", "r"],
+    "data-engineer": ["sql", "python", "spark", "airflow", "kafka", "etl", "redshift", "bigquery", "hadoop", "dbt"],
+    "cloud-engineer": ["aws", "azure", "gcp", "terraform", "docker", "kubernetes", "iam", "vpc", "lambda", "cloudformation"],
+    "mobile-developer": ["swift", "kotlin", "react-native", "flutter", "rest-api", "sqlite", "firebase", "ui/ux", "git", "ci/cd"],
+    "flutter-developer": ["flutter", "dart", "widgets", "state-management", "firebase", "bloc", "provider", "rest-api", "hive", "riverpod"],
+    "android-developer": ["kotlin", "java", "android-sdk", "jetpack-compose", "room", "retrofit", "mvvm", "firebase", "gradle", "coroutines"],
+    "ios-developer": ["swift", "swiftui", "uikit", "xcode", "core-data", "combine", "cocoapods", "mvvm", "rest-api", "testflight"],
+    "blockchain-developer": ["solidity", "ethereum", "web3.js", "smart-contracts", "hardhat", "truffle", "ipfs", "defi", "nft", "consensus"],
+    "cybersecurity-engineer": ["penetration-testing", "firewalls", "siem", "encryption", "owasp", "nmap", "wireshark", "incident-response", "iam", "vulnerability-assessment"],
 }

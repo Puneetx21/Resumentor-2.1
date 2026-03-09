@@ -33,5 +33,28 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+
+    // Login popup for first-time visitors
+    const loginOverlay = document.getElementById('loginOverlay');
+    if (loginOverlay) {
+        const dismissed = sessionStorage.getItem('loginPopupDismissed');
+        if (!dismissed) {
+            loginOverlay.style.display = 'flex';
+        }
+
+        function closeLoginPopup() {
+            loginOverlay.style.display = 'none';
+            sessionStorage.setItem('loginPopupDismissed', '1');
+        }
+
+        const closeBtn = document.getElementById('loginModalClose');
+        const guestBtn = document.getElementById('loginModalGuest');
+        if (closeBtn) closeBtn.addEventListener('click', closeLoginPopup);
+        if (guestBtn) guestBtn.addEventListener('click', closeLoginPopup);
+
+        loginOverlay.addEventListener('click', (e) => {
+            if (e.target === loginOverlay) closeLoginPopup();
+        });
+    }
 });
     
